@@ -1,0 +1,50 @@
+{
+  "name": "Subscription",
+  "type": "object",
+  "properties": {
+    "building_id": {
+      "type": "string",
+      "title": "Building ID"
+    },
+    "plan_name": {
+      "type": "string",
+      "default": "Warraq Building Collection",
+      "title": "Plan Name"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "trialing",
+        "active",
+        "paused",
+        "cancelled"
+      ],
+      "default": "trialing",
+      "title": "Status"
+    },
+    "monthly_price": {
+      "type": "number",
+      "default": 100,
+      "title": "Monthly Price (EGP)"
+    },
+    "trial_start_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Trial Start Date"
+    },
+    "trial_end_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Trial End Date"
+    },
+    "converted_at": {
+      "type": "string",
+      "format": "date",
+      "title": "Converted At"
+    }
+  },
+  "required": [
+    "building_id",
+    "status"
+  ]
+}

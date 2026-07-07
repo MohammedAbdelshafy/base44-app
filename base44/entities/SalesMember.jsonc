@@ -1,0 +1,36 @@
+{
+  "name": "SalesMember",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Name"
+    },
+    "phone": {
+      "type": "string",
+      "title": "Phone"
+    },
+    "member_role": {
+      "type": "string",
+      "enum": [
+        "rep",
+        "manager",
+        "banger"
+      ],
+      "title": "Role"
+    },
+    "rep_code": {
+      "type": "string",
+      "title": "Rep Code"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "title": "Active"
+    }
+  },
+  "required": [
+    "name",
+    "member_role"
+  ]
+}

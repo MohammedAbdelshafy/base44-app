@@ -1,0 +1,45 @@
+{
+  "name": "Invitation",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "title": "Email"
+    },
+    "intended_role": {
+      "type": "string",
+      "title": "Intended Role"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "cancelled"
+      ],
+      "default": "pending",
+      "title": "Status"
+    },
+    "invited_by_id": {
+      "type": "string",
+      "title": "Invited By ID"
+    },
+    "invited_by_name": {
+      "type": "string",
+      "title": "Invited By Name"
+    },
+    "invited_at": {
+      "type": "string",
+      "title": "Invited At"
+    },
+    "accepted_user_id": {
+      "type": "string",
+      "title": "Accepted User ID"
+    }
+  },
+  "required": [
+    "email",
+    "intended_role",
+    "status"
+  ]
+}

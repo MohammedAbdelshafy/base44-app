@@ -1,0 +1,30 @@
+{
+  "name": "BuildingNote",
+  "type": "object",
+  "properties": {
+    "building_id": {
+      "type": "string",
+      "title": "Building ID"
+    },
+    "note": {
+      "type": "string",
+      "title": "Note"
+    },
+    "author_id": {
+      "type": "string",
+      "title": "Author ID"
+    },
+    "author_name": {
+      "type": "string",
+      "title": "Author Name"
+    },
+    "timestamp": {
+      "type": "string",
+      "title": "Timestamp"
+    }
+  },
+  "required": [
+    "building_id",
+    "note"
+  ]
+}

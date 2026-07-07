@@ -1,0 +1,122 @@
+{
+  "name": "Building",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Property Name"
+    },
+    "address": {
+      "type": "string",
+      "title": "Address"
+    },
+    "property_type": {
+      "type": "string",
+      "enum": [
+        "apartment_building",
+        "villa",
+        "single_apartment",
+        "restaurant_cafe",
+        "shop",
+        "office",
+        "school",
+        "other"
+      ],
+      "default": "apartment_building",
+      "title": "Property Type"
+    },
+    "gps_lat": {
+      "type": "number",
+      "title": "GPS Latitude"
+    },
+    "gps_lng": {
+      "type": "number",
+      "title": "GPS Longitude"
+    },
+    "photo": {
+      "type": "string",
+      "title": "Photo URL"
+    },
+    "bawab_name": {
+      "type": "string",
+      "title": "Doorman Name"
+    },
+    "bawab_phone": {
+      "type": "string",
+      "title": "Doorman Phone"
+    },
+    "contact_person_name": {
+      "type": "string",
+      "title": "Contact Person Name"
+    },
+    "contact_person_phone": {
+      "type": "string",
+      "title": "Contact Person Phone"
+    },
+    "num_floors": {
+      "type": "number",
+      "title": "Number of Floors"
+    },
+    "num_apartments": {
+      "type": "number",
+      "title": "Number of Apartments"
+    },
+    "notes": {
+      "type": "string",
+      "title": "Notes"
+    },
+    "rep_code": {
+      "type": "string",
+      "title": "Rep Code"
+    },
+    "collection_frequency": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "custom"
+      ],
+      "default": "daily",
+      "title": "Collection Frequency"
+    },
+    "collection_days_per_week": {
+      "type": "number",
+      "title": "Days Per Week"
+    },
+    "collection_weekdays": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "title": "Collection Weekdays"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pickup_requested",
+        "active",
+        "paused",
+        "rejected"
+      ],
+      "default": "active",
+      "title": "Building Status"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "bawab_signup",
+        "manual"
+      ],
+      "default": "manual",
+      "title": "Source"
+    },
+    "rejection_reason": {
+      "type": "string",
+      "title": "Rejection Reason"
+    }
+  },
+  "required": [
+    "name",
+    "address",
+    "property_type"
+  ]
+}

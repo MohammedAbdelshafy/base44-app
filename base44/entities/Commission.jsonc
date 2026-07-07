@@ -1,0 +1,71 @@
+{
+  "name": "Commission",
+  "type": "object",
+  "properties": {
+    "sales_member_id": {
+      "type": "string",
+      "title": "Sales Member ID"
+    },
+    "sales_member_name": {
+      "type": "string",
+      "title": "Sales Member Name"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "rep_bounty",
+        "manager_override",
+        "deal_primary",
+        "deal_referral",
+        "deal_closer_kickback"
+      ],
+      "title": "Type"
+    },
+    "amount": {
+      "type": "number",
+      "title": "Amount (EGP)"
+    },
+    "building_id": {
+      "type": "string",
+      "title": "Building ID"
+    },
+    "building_name": {
+      "type": "string",
+      "title": "Building Name"
+    },
+    "payment_id": {
+      "type": "string",
+      "title": "Payment ID"
+    },
+    "deal_id": {
+      "type": "string",
+      "title": "Deal ID"
+    },
+    "deal_title": {
+      "type": "string",
+      "title": "Deal Title"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "paid"
+      ],
+      "default": "pending",
+      "title": "Status"
+    },
+    "rep_code": {
+      "type": "string",
+      "title": "Rep Code"
+    },
+    "paid_at": {
+      "type": "string",
+      "title": "Paid At"
+    }
+  },
+  "required": [
+    "sales_member_id",
+    "type",
+    "amount"
+  ]
+}

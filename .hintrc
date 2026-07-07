@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "development"
+  ],
+  "ignoredUrls": [
+    {
+      "domain": ".*\\.domain1\\.com/.*",
+      "hints": [
+        "*"
+      ]
+    },
+    {
+      "domain": "www.domain2.net",
+      "hints": [
+        "disallowed-headers"
+      ]
+    }
+  ]
+}

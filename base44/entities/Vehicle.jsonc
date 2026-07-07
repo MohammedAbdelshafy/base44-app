@@ -1,0 +1,33 @@
+{
+  "name": "Vehicle",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Vehicle Name/Code"
+    },
+    "plate_number": {
+      "type": "string",
+      "title": "Plate Number"
+    },
+    "vehicle_type": {
+      "type": "string",
+      "enum": [
+        "tuk-tuk",
+        "motorcycle-cart",
+        "pickup"
+      ],
+      "title": "Vehicle Type"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "title": "Active"
+    }
+  },
+  "required": [
+    "name",
+    "plate_number",
+    "vehicle_type"
+  ]
+}

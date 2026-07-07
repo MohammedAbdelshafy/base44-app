@@ -1,0 +1,59 @@
+{
+  "name": "Pickup",
+  "type": "object",
+  "properties": {
+    "building_id": {
+      "type": "string",
+      "title": "Building ID"
+    },
+    "building_name": {
+      "type": "string",
+      "title": "Building Name"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Date"
+    },
+    "assigned_driver_id": {
+      "type": "string",
+      "title": "Assigned Driver ID"
+    },
+    "assigned_driver_name": {
+      "type": "string",
+      "title": "Assigned Driver Name"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "done",
+        "failed"
+      ],
+      "default": "pending",
+      "title": "Status"
+    },
+    "failure_reason": {
+      "type": "string",
+      "title": "Failure Reason"
+    },
+    "completion_photo": {
+      "type": "string",
+      "title": "Completion Photo URL"
+    },
+    "completion_timestamp": {
+      "type": "string",
+      "title": "Completion Timestamp"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0,
+      "title": "Sort Order"
+    }
+  },
+  "required": [
+    "building_id",
+    "date",
+    "status"
+  ]
+}

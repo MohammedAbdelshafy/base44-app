@@ -1,0 +1,187 @@
+{
+  "name": "Deal",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "Title"
+    },
+    "material": {
+      "type": "string",
+      "enum": [
+        "plastic_pet",
+        "plastic_hdpe",
+        "plastic_other",
+        "cardboard",
+        "paper",
+        "metal",
+        "glass",
+        "used_cooking_oil",
+        "organic",
+        "other"
+      ],
+      "title": "Material"
+    },
+    "quantity": {
+      "type": "number",
+      "title": "Quantity"
+    },
+    "unit": {
+      "type": "string",
+      "enum": [
+        "kg",
+        "ton",
+        "pieces",
+        "liters"
+      ],
+      "title": "Unit"
+    },
+    "seller_factory_name": {
+      "type": "string",
+      "title": "Seller Factory"
+    },
+    "seller_contact_person": {
+      "type": "string",
+      "title": "Seller Contact"
+    },
+    "seller_phone": {
+      "type": "string",
+      "title": "Seller Phone"
+    },
+    "seller_city": {
+      "type": "string",
+      "title": "Seller City"
+    },
+    "buyer_factory_name": {
+      "type": "string",
+      "title": "Buyer Factory"
+    },
+    "buyer_contact_person": {
+      "type": "string",
+      "title": "Buyer Contact"
+    },
+    "buyer_phone": {
+      "type": "string",
+      "title": "Buyer Phone"
+    },
+    "buyer_city": {
+      "type": "string",
+      "title": "Buyer City"
+    },
+    "buy_total": {
+      "type": "number",
+      "default": 0,
+      "title": "Buy Total (EGP)"
+    },
+    "sell_total": {
+      "type": "number",
+      "default": 0,
+      "title": "Sell Total (EGP)"
+    },
+    "other_costs": {
+      "type": "number",
+      "default": 0,
+      "title": "Other Costs (EGP)"
+    },
+    "other_costs_notes": {
+      "type": "string",
+      "title": "Other Costs Notes"
+    },
+    "profit": {
+      "type": "number",
+      "default": 0,
+      "title": "Profit (EGP)"
+    },
+    "primary_banger_id": {
+      "type": "string",
+      "title": "Primary Banger ID"
+    },
+    "primary_banger_name": {
+      "type": "string",
+      "title": "Primary Banger Name"
+    },
+    "referrer_id": {
+      "type": "string",
+      "title": "Referrer ID"
+    },
+    "referrer_name": {
+      "type": "string",
+      "title": "Referrer Name"
+    },
+    "closer_id": {
+      "type": "string",
+      "title": "Closer ID"
+    },
+    "closer_name": {
+      "type": "string",
+      "title": "Closer Name"
+    },
+    "referral_split_percent": {
+      "type": "number",
+      "default": 50,
+      "title": "Referral Split %"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "lead",
+        "negotiating",
+        "agreed",
+        "in_delivery",
+        "settled",
+        "cancelled"
+      ],
+      "default": "lead",
+      "title": "Status"
+    },
+    "lead_date": {
+      "type": "string",
+      "title": "Lead Date"
+    },
+    "negotiating_date": {
+      "type": "string",
+      "title": "Negotiating Date"
+    },
+    "agreed_date": {
+      "type": "string",
+      "title": "Agreed Date"
+    },
+    "in_delivery_date": {
+      "type": "string",
+      "title": "In Delivery Date"
+    },
+    "settled_at": {
+      "type": "string",
+      "title": "Settled At"
+    },
+    "cancelled_date": {
+      "type": "string",
+      "title": "Cancelled Date"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Attachments"
+    },
+    "notes": {
+      "type": "string",
+      "title": "Notes"
+    },
+    "confirmed_by_id": {
+      "type": "string",
+      "title": "Confirmed By ID"
+    },
+    "confirmed_by_name": {
+      "type": "string",
+      "title": "Confirmed By Name"
+    }
+  },
+  "required": [
+    "title",
+    "material",
+    "primary_banger_id",
+    "status"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "Payment",
+  "type": "object",
+  "properties": {
+    "building_id": {
+      "type": "string",
+      "title": "Building ID"
+    },
+    "building_name": {
+      "type": "string",
+      "title": "Building Name"
+    },
+    "amount": {
+      "type": "number",
+      "default": 100,
+      "title": "Amount (EGP)"
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Payment Date"
+    },
+    "collected_by_id": {
+      "type": "string",
+      "title": "Collected By ID"
+    },
+    "collected_by_name": {
+      "type": "string",
+      "title": "Collected By Name"
+    },
+    "note": {
+      "type": "string",
+      "title": "Note"
+    }
+  },
+  "required": [
+    "building_id",
+    "amount",
+    "payment_date"
+  ]
+}

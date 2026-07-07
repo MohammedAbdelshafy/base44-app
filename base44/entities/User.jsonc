@@ -1,0 +1,56 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "admin",
+        "ops",
+        "sales_rep",
+        "banger",
+        "data_manager",
+        "driver",
+        "warehouse_foreman",
+        "customer"
+      ],
+      "default": "user",
+      "title": "Role"
+    },
+    "invited_by_admin": {
+      "type": "boolean",
+      "default": false,
+      "title": "Invited By Admin"
+    },
+    "rep_code": {
+      "type": "string",
+      "title": "Rep Code"
+    },
+    "phone": {
+      "type": "string",
+      "title": "Phone"
+    },
+    "photo": {
+      "type": "string",
+      "title": "Photo URL"
+    },
+    "assigned_vehicle_id": {
+      "type": "string",
+      "title": "Assigned Vehicle ID"
+    },
+    "assigned_vehicle_name": {
+      "type": "string",
+      "title": "Assigned Vehicle Name"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "title": "Active"
+    },
+    "building_id": {
+      "type": "string",
+      "title": "Linked Building ID"
+    }
+  }
+}

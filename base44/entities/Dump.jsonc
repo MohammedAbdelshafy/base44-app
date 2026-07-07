@@ -1,0 +1,49 @@
+{
+  "name": "Dump",
+  "type": "object",
+  "properties": {
+    "vehicle_id": {
+      "type": "string",
+      "title": "Vehicle ID"
+    },
+    "vehicle_name": {
+      "type": "string",
+      "title": "Vehicle Name"
+    },
+    "timestamp": {
+      "type": "string",
+      "title": "Timestamp"
+    },
+    "logged_by_id": {
+      "type": "string",
+      "title": "Logged By ID"
+    },
+    "logged_by_name": {
+      "type": "string",
+      "title": "Logged By Name"
+    },
+    "weight_kg": {
+      "type": "number",
+      "title": "Estimated Weight (kg)"
+    },
+    "waste_type": {
+      "type": "string",
+      "enum": [
+        "mixed",
+        "organic",
+        "recyclable",
+        "cardboard",
+        "cooking_oil"
+      ],
+      "title": "Waste Type"
+    },
+    "photo": {
+      "type": "string",
+      "title": "Photo URL"
+    }
+  },
+  "required": [
+    "vehicle_id",
+    "timestamp"
+  ]
+}
