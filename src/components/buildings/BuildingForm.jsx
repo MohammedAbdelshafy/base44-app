@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
+import { uploadFile } from '@/api/uploadFile';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -99,21 +100,21 @@ export default function BuildingForm({ open, onClose, building, onSaved }) {
       num_apartments: form.num_apartments ? Number(form.num_apartments) : null,
     };
     if (building) {
-      await base44.entities.Building.update(building.id, data);
+      await supabase.from('buildings').update(data).eq('id', building.id);
     } else {
-      const created = await base44.entities.Building.create(data);
+      const created = await supabase.from('buildings').insert([data]);
       // Auto-create subscription
       const today = new Date().toISOString().split('T')[0];
       const trialEnd = new Date();
       trialEnd.setMonth(trialEnd.getMonth() + 1);
-      await base44.entities.Subscription.create({
+      await supabase.from('subscriptions').insert([{
         building_id: created.id,
         plan_name: 'Warraq Building Collection',
         status: 'trialing',
         monthly_price: 100,
         trial_start_date: today,
-        trial_end_date: trialEnd.toISOString().split('T')[0],
-      });
+trial_end_date: trialEnd.toISOString().split('T')[0],
+        }]);
     }
     setSaving(false);
     onSaved();

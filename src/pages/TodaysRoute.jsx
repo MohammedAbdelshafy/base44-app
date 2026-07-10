@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
+import { uploadFile } from '@/api/uploadFile';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
 import { todayCairo, nowCairo } from '@/lib/dateUtils';
@@ -26,11 +27,11 @@ export default function TodaysRoute() {
 
   async function load() {
     const today = todayCairo();
-    const allPickups = await base44.entities.Pickup.filter({ date: today, assigned_driver_id: user?.id }, 'sort_order');
+    const allPickups = (await supabase.from('pickups').select('*').eq('date', today).order('sort_order', { ascending: true })).data;
     const buildingIds = [...new Set(allPickups.map(p => p.building_id))];
     let blds = [];
     if (buildingIds.length > 0) {
-      blds = await base44.entities.Building.list();
+      blds = (await supabase.from('buildings').select('*')).data;
     }
     setPickups(allPickups);
     setBuildings(blds);
@@ -46,10 +47,10 @@ export default function TodaysRoute() {
     setUploading(true);
     let photoUrl = '';
     if (photoFile) {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file: photoFile });
+      const { file_url } = await uploadFile(photoFile );
       photoUrl = file_url;
     }
-    await base44.entities.Pickup.update(pickupId, {
+    await supabase.from('pickups').update({
       status: 'done',
       completion_photo: photoUrl,
       completion_timestamp: nowCairo().toISOString(),
@@ -62,10 +63,10 @@ export default function TodaysRoute() {
 
   async function markFailed(pickupId) {
     if (!failReason.trim()) return;
-    await base44.entities.Pickup.update(pickupId, {
+    await supabase.from('pickups').update({
       status: 'failed',
       failure_reason: failReason,
-    });
+    }).eq('id', pickupId);
     setFailDialog(null);
     setFailReason('');
     toast({ title: t('failed') });

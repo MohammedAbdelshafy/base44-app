@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
 import { formatDateTime } from '@/lib/dateUtils';
@@ -136,7 +136,7 @@ export default function Buildings() {
                   <td className="p-3 hidden sm:table-cell">{isApartmentType(b.property_type) ? (b.bawab_name || '—') : (b.contact_person_name || '—')}</td>
                   <td className="p-3"><StatusBadge status={subMap[b.id]?.status || 'trialing'} /></td>
                   <td className="p-3 hidden lg:table-cell text-muted-foreground">{b.rep_code || '—'}</td>
-                  <td className="p-3 hidden lg:table-cell text-xs text-muted-foreground">{formatDateTime(b.created_date)}</td>
+                  <td className="p-3 hidden lg:table-cell text-xs text-muted-foreground">{formatDateTime(b.created_at)}</td>
                   <td className="p-3">
                     <div className="flex items-center gap-1">
                       <Button variant="ghost" size="icon" onClick={() => setViewBuilding(b)}><Eye size={16} /></Button>
@@ -196,7 +196,7 @@ export default function Buildings() {
                 )}
                 <div><span className="text-muted-foreground">{t('rep_code')}:</span> {viewBuilding.rep_code || '—'}</div>
                 <div><span className="text-muted-foreground">{t('subscription')}:</span> <StatusBadge status={subMap[viewBuilding.id]?.status || 'trialing'} /></div>
-                <div><span className="text-muted-foreground">{t('created_at')}:</span> {formatDateTime(viewBuilding.created_date)}</div>
+                <div><span className="text-muted-foreground">{t('created_at')}:</span> {formatDateTime(viewBuilding.created_at)}</div>
               </div>
               {viewBuilding.notes && <div><span className="text-muted-foreground">{t('notes')}:</span> {viewBuilding.notes}</div>}
               <div className="pt-2 border-t">

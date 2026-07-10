@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
 import { todayCairo, formatDateTime } from '@/lib/dateUtils';
@@ -49,7 +49,7 @@ export default function Payments() {
     setSaving(true);
     const building = buildings.find(b => b.id === form.building_id);
     const amount = Number(form.amount);
-    const payment = await base44.entities.Payment.create({
+    const payment = await supabase.from('payments').insert([{
       building_id: form.building_id,
       building_name: building?.name || '',
       amount,
@@ -57,26 +57,26 @@ export default function Payments() {
       collected_by_id: user?.id,
       collected_by_name: user?.full_name || user?.email || '',
       note: form.note,
-    });
+    }]);
 
     const sub = subscriptions.find(s => s.building_id === form.building_id);
 
     // 1+2: Convert trialing subscription to active on first qualifying payment
     if (sub && sub.status === 'trialing' && amount >= 100) {
-      await base44.entities.Subscription.update(sub.id, {
+      await supabase.from('subscriptions').update({
         status: 'active',
         converted_at: form.payment_date,
-      });
+      }).eq('id', sub.id);
 
       // 3: Rep bounty — only on this first conversion, never again
       if (building?.rep_code) {
         const rep = salesMembers.find(sm => sm.rep_code === building.rep_code && sm.member_role === 'rep');
         if (rep) {
-          const existingBounty = await base44.entities.Commission.filter({
-            payment_id: payment.id, type: 'rep_bounty',
-          });
+          const existingBounty = (await supabase.from('commissions').select('*').match({
+            payment_id: payment.id
+          }).order('type', { ascending: true })).data;
           if (existingBounty.length === 0) {
-            await base44.entities.Commission.create({
+            await supabase.from('commissions').insert([{
               sales_member_id: rep.id,
               sales_member_name: rep.name,
               type: 'rep_bounty',
@@ -86,7 +86,7 @@ export default function Payments() {
               payment_id: payment.id,
               rep_code: building.rep_code,
               status: 'pending',
-            });
+            }]);
           }
         }
       }
@@ -95,11 +95,9 @@ export default function Payments() {
     // 4: Manager override — 5% on every payment, regardless of subscription status
     const manager = salesMembers.find(sm => sm.member_role === 'manager' && sm.is_active);
     if (manager) {
-      const existingOverride = await base44.entities.Commission.filter({
-        payment_id: payment.id, type: 'manager_override',
-      });
+      const existingOverride = (await supabase.from('commissions').select('*').eq('payment_id', payment.id).order('type', { ascending: true })).data;
       if (existingOverride.length === 0) {
-        await base44.entities.Commission.create({
+        await supabase.from('commissions').insert([{
           sales_member_id: manager.id,
           sales_member_name: manager.name,
           type: 'manager_override',
@@ -108,7 +106,7 @@ export default function Payments() {
           building_name: building?.name || '',
           payment_id: payment.id,
           status: 'pending',
-        });
+        }]);
       }
     }
 
@@ -120,7 +118,7 @@ export default function Payments() {
   }
 
   async function handleDelete(id) {
-    await base44.entities.Payment.delete(id);
+    await supabase.from('payments').delete().eq('id', id);
     toast({ title: t('delete') });
     load();
   }
@@ -179,7 +177,7 @@ export default function Payments() {
                   <td className="p-3 hidden sm:table-cell">{p.payment_date}</td>
                   <td className="p-3 hidden md:table-cell text-muted-foreground">{p.collected_by_name || '—'}</td>
                   <td className="p-3 hidden lg:table-cell text-muted-foreground">{p.note || '—'}</td>
-                  <td className="p-3 hidden lg:table-cell text-xs text-muted-foreground">{formatDateTime(p.created_date)}</td>
+                  <td className="p-3 hidden lg:table-cell text-xs text-muted-foreground">{formatDateTime(p.created_at)}</td>
                   {role === 'admin' && (
                     <td className="p-3">
                       <Button variant="ghost" size="icon" onClick={() => handleDelete(p.id)}>

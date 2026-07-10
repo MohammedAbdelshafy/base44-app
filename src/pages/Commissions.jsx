@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
 import { formatDateTime } from '@/lib/dateUtils';
@@ -84,7 +84,7 @@ export default function Commissions() {
   const monthOptions = [];
   const monthSet = new Set();
   scoped.forEach(c => {
-    const ym = getYearMonth(c.created_date);
+    const ym = getYearMonth(c.created_at);
     if (ym && !monthSet.has(ym)) { monthSet.add(ym); monthOptions.push(ym); }
   });
   monthOptions.sort().reverse();
@@ -112,7 +112,7 @@ export default function Commissions() {
   if (personFilter !== 'all') filtered = filtered.filter(c => c.sales_member_id === personFilter);
   if (typeFilter !== 'all') filtered = filtered.filter(c => c.type === typeFilter);
   if (statusFilter !== 'all') filtered = filtered.filter(c => c.status === statusFilter);
-  if (monthFilter !== 'all') filtered = filtered.filter(c => getYearMonth(c.created_date) === monthFilter);
+  if (monthFilter !== 'all') filtered = filtered.filter(c => getYearMonth(c.created_at) === monthFilter);
 
   // Summary per person
   const personSummary = {};
@@ -151,7 +151,7 @@ export default function Commissions() {
 
   async function markPaid(ids) {
     const now = new Date().toISOString();
-    await base44.entities.Commission.bulkUpdate(ids.map(id => ({ id, status: 'paid', paid_at: now })));
+    await supabase.from('commissions').update({ status: 'paid', paid_at: now }).in('id', ids);
     setSelected(new Set());
     toast({ title: `${ids.length} ${t('mark_paid')}` });
     load();
@@ -305,7 +305,7 @@ export default function Commissions() {
                   <td className="p-3 font-semibold"><span dir="ltr">{formatEgp(c.amount, lang)}</span></td>
                   <td className="p-3 hidden sm:table-cell text-muted-foreground">{c.building_name || c.deal_title || '—'}</td>
                   <td className="p-3"><StatusBadge status={c.status} /></td>
-                  <td className="p-3 hidden md:table-cell text-xs text-muted-foreground">{formatDateTime(c.created_date)}</td>
+                  <td className="p-3 hidden md:table-cell text-xs text-muted-foreground">{formatDateTime(c.created_at)}</td>
                   <td className="p-3 hidden md:table-cell text-xs text-muted-foreground">{c.paid_at ? formatDateTime(c.paid_at) : '—'}</td>
                   {role === 'admin' && (
                     <td className="p-3">

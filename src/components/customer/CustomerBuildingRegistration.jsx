@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
+import { uploadFile } from '@/api/uploadFile';
 import { useLang } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,7 +54,7 @@ export default function CustomerBuildingRegistration({ user, onDone, onCancel })
     }
     setSubmitting(true);
     try {
-      const res = await base44.functions.invoke('bawabSignup', {
+      const res = await supabase.functions.invoke('bawabSignup', { body: {
         name: form.name,
         phone: form.phone,
         address: form.address,
@@ -64,7 +65,7 @@ export default function CustomerBuildingRegistration({ user, onDone, onCancel })
         num_floors: form.num_floors ? Number(form.num_floors) : null,
         num_apartments: form.num_apartments ? Number(form.num_apartments) : null,
         link_user_id: user.id,
-      });
+      } });
       onDone(res?.building_id);
     } catch (err) {
       setError(err.message || 'Error');

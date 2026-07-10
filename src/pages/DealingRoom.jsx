@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
 import { statusDateUpdate, NEXT_STATUS } from '@/lib/dealUtils';
@@ -74,12 +74,12 @@ export default function DealingRoom() {
   async function advanceStatus(deal) {
     const next = NEXT_STATUS[deal.status];
     if (!next) return;
-    await base44.entities.Deal.update(deal.id, statusDateUpdate(next));
+    await supabase.from('deals').update(statusDateUpdate(next).eq('id', deal.id));
     load();
   }
 
   async function cancelDeal(deal) {
-    await base44.entities.Deal.update(deal.id, statusDateUpdate('cancelled'));
+    await supabase.from('deals').update(statusDateUpdate('cancelled').eq('id', deal.id));
     load();
   }
 

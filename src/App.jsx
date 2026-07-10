@@ -36,6 +36,12 @@ import Drivers from '@/pages/Drivers';
 import DoormanSignup from '@/pages/DoormanSignup';
 import NewRequests from '@/pages/NewRequests';
 import MyBuilding from '@/pages/MyBuilding';
+import Reports from '@/pages/Reports';
+
+// Mission Control pages
+import MissionControlDashboard from '@/pages/MissionControlDashboard';
+import MissionDetail from '@/pages/MissionDetail';
+import ChronicleSearch from '@/pages/ChronicleSearch';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -86,8 +92,14 @@ const AuthenticatedApp = () => {
           <Route path="/drivers" element={<RoleRoute module="drivers"><Drivers /></RoleRoute>} />
           <Route path="/new-requests" element={<RoleRoute module="new_requests"><NewRequests /></RoleRoute>} />
           <Route path="/my-building" element={<RoleRoute module="my_building"><MyBuilding /></RoleRoute>} />
+          <Route path="/reports" element={<RoleRoute module="reports"><Reports /></RoleRoute>} />
         </Route>
       </Route>
+      {/* Mission Control (independent of business app auth) */}
+      <Route path="/mission-control" element={<MissionControlDashboard />} />
+      <Route path="/mission-control/:missionId" element={<MissionDetail />} />
+      <Route path="/chronicle" element={<ChronicleSearch />} />
+
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

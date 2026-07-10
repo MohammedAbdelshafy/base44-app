@@ -67,3 +67,18 @@
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground));
 }
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-glass;
+  }
+  .glass-sidebar {
+    @apply bg-navy/95 backdrop-blur-xl border-r border-white/10 shadow-xl;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-primary;
+  }
+  .text-gradient-success {
+    @apply bg-clip-text text-transparent bg-gradient-success;
+  }
+}

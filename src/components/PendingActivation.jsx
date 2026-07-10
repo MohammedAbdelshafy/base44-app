@@ -1,5 +1,5 @@
 import React from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 

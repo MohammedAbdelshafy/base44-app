@@ -1,0 +1,26 @@
+{
+  "name": "DailyReport",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Report Date"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["operations_summary"],
+      "default": "operations_summary",
+      "title": "Report Type"
+    },
+    "csv_content": {
+      "type": "string",
+      "title": "CSV Content"
+    },
+    "summary": {
+      "type": "string",
+      "title": "Summary"
+    }
+  },
+  "required": ["date", "type", "csv_content"]
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { currentYM, buildLastMonths, computeGrowth, computeSubscriptions, computeRevenue, computeSales } from '@/lib/kpiUtils';
 import PageHeader from '@/components/shared/PageHeader';

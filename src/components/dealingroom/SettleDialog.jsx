@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
 import { nowCairo } from '@/lib/dateUtils';
@@ -45,10 +45,10 @@ export default function SettleDialog({ deal, bangers, onClose, onSettled }) {
     setSettling(true);
     try {
       const now = nowCairo().toISOString();
-      await base44.entities.Deal.update(deal.id, {
+      await supabase.from('deals').update({
         status: 'settled',
         settled_at: now,
-        buy_total: Number(form.buy_total) || 0,
+        buy_total: Number(form.buy_total).eq('id', deal.id) || 0,
         sell_total: Number(form.sell_total) || 0,
         other_costs: Number(form.other_costs) || 0,
         profit,
@@ -59,11 +59,9 @@ export default function SettleDialog({ deal, bangers, onClose, onSettled }) {
       });
 
       // Create commissions only if profit > 0 (idempotency guard)
-      const existing = await base44.entities.Commission.filter({ deal_id: deal.id });
-      if (existing.length === 0 && entries.length > 0) {
-        await base44.entities.Commission.bulkCreate(
-          entries.map(e => ({ ...e, deal_id: deal.id, deal_title: deal.title, status: 'pending' }))
-        );
+      const existing = (await supabase.from('commissions').select('*').match({ deal_id: deal.id })).data;
+      if (existing?.length === 0 && entries.length > 0) {
+        await supabase.from('commissions').insert(entries);
       }
 
       toast({ title: t('settled') });

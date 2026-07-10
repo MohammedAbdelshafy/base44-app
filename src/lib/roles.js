@@ -1,7 +1,7 @@
 // Role-based access control
 const ROLE_ACCESS = {
-  admin: ['dashboard', 'kpis', 'buildings', 'pickups', 'payments', 'commissions', 'warehouse', 'users', 'vehicles', 'sales_members', 'dealing_room', 'drivers', 'new_requests', 'customers'],
-  ops: ['dashboard', 'kpis', 'buildings', 'pickups', 'payments', 'commissions', 'warehouse', 'vehicles', 'sales_members', 'dealing_room', 'drivers', 'new_requests', 'customers'],
+  admin: ['dashboard', 'kpis', 'buildings', 'pickups', 'payments', 'commissions', 'warehouse', 'users', 'vehicles', 'sales_members', 'dealing_room', 'drivers', 'new_requests', 'customers', 'reports'],
+  ops: ['dashboard', 'kpis', 'buildings', 'pickups', 'payments', 'commissions', 'warehouse', 'vehicles', 'sales_members', 'dealing_room', 'drivers', 'new_requests', 'customers', 'reports'],
   sales_rep: ['buildings', 'commissions'],
   banger: ['dealing_room', 'commissions'],
   data_manager: ['buildings', 'pickups', 'new_requests', 'customers'],

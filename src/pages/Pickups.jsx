@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
 import { todayCairo, formatDateTime, formatDate, nowCairo } from '@/lib/dateUtils';
@@ -64,7 +64,7 @@ export default function Pickups() {
     });
 
     if (toCreate.length > 0) {
-      await base44.entities.Pickup.bulkCreate(
+      await supabase.from('pickups').insert(
         toCreate.map((b, i) => ({
           building_id: b.id,
           building_name: b.name,
@@ -82,10 +82,10 @@ export default function Pickups() {
   async function assignDriver(pickupId) {
     if (!selectedDriver) return;
     const driverUser = drivers.find(d => d.id === selectedDriver);
-    await base44.entities.Pickup.update(pickupId, {
+    await supabase.from('pickups').update({
       assigned_driver_id: selectedDriver,
       assigned_driver_name: driverUser?.full_name || '',
-    });
+    }).eq('id', pickupId);
     setAssignDialog(null);
     setSelectedDriver('');
     load();
@@ -156,7 +156,7 @@ export default function Pickups() {
                   <td className="p-3 font-medium">{p.building_name}</td>
                   <td className="p-3 hidden sm:table-cell">{p.assigned_driver_name || '—'}</td>
                   <td className="p-3"><StatusBadge status={p.status} /></td>
-                  <td className="p-3 hidden md:table-cell text-xs text-muted-foreground">{formatDateTime(p.created_date)}</td>
+                  <td className="p-3 hidden md:table-cell text-xs text-muted-foreground">{formatDateTime(p.created_at)}</td>
                   {!isDataManager && (
                     <td className="p-3">
                       <Button variant="outline" size="sm" onClick={() => { setAssignDialog(p); setSelectedDriver(p.assigned_driver_id || ''); }}>

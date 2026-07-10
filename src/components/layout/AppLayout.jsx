@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
 import { canAccess, getHomeRoute, isUnassignedRole } from '@/lib/roles';
 import {
   LayoutDashboard, BarChart3, Building2, Truck, CreditCard, Award,
-  Warehouse, Users, UsersRound, Car, UserCog, Menu, X, LogOut, Handshake, UserCheck, Inbox
+  Warehouse, Users, UsersRound, Car, UserCog, Menu, X, LogOut, Handshake, UserCheck, Inbox, FileText
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import PendingActivation from '@/components/PendingActivation';
 
@@ -27,6 +28,7 @@ const navItems = [
   { key: 'new_requests', icon: Inbox, path: '/new-requests', module: 'new_requests' },
   { key: 'my_building', icon: Building2, path: '/my-building', module: 'my_building' },
   { key: 'users', icon: Users, path: '/users', module: 'users', label: 'team' },
+  { key: 'reports', icon: FileText, path: '/reports', module: 'reports' },
   { key: 'customers', icon: UsersRound, path: '/customers', module: 'customers' },
 ];
 
@@ -52,9 +54,9 @@ export default function AppLayout() {
   const visibleNav = navItems.filter(item => canAccess(role, item.module));
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-slate-50">
       {/* Sidebar - Desktop */}
-      <aside className="hidden lg:flex flex-col w-64 bg-navy text-white shrink-0">
+      <aside className="hidden lg:flex flex-col w-64 glass-sidebar text-white shrink-0 z-20">
         <SidebarContent
           visibleNav={visibleNav}
           location={location}
@@ -71,7 +73,7 @@ export default function AppLayout() {
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute inset-y-0 right-0 w-72 bg-navy text-white flex flex-col rtl:right-auto rtl:left-0 ltr:right-auto ltr:left-0"
+          <aside className="absolute inset-y-0 right-0 w-72 glass-sidebar text-white flex flex-col rtl:right-auto rtl:left-0 ltr:right-auto ltr:left-0 shadow-2xl"
             style={isRTL ? { right: 0, left: 'auto' } : { left: 0, right: 'auto' }}>
             <div className="flex justify-end p-3">
               <button onClick={() => setMobileOpen(false)} className="text-white/70 hover:text-white">
@@ -96,7 +98,7 @@ export default function AppLayout() {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="h-14 bg-white border-b flex items-center px-4 gap-3 shrink-0">
+        <header className="h-14 bg-white/70 backdrop-blur-md border-b flex items-center px-4 gap-3 shrink-0 z-10">
           <button className="lg:hidden text-navy" onClick={() => setMobileOpen(true)}>
             <Menu size={24} />
           </button>
@@ -115,8 +117,19 @@ export default function AppLayout() {
           </span>
         </header>
 
-        <main className="flex-1 overflow-auto p-4 md:p-6">
-          <Outlet />
+        <main className="flex-1 overflow-auto p-4 md:p-6 relative">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="h-full"
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
     </div>
@@ -141,10 +154,10 @@ function SidebarContent({ visibleNav, location, t, lang, setLang, user, role, re
               key={item.key}
               to={item.path}
               onClick={onNavClick}
-              className={`flex items-center gap-3 px-5 py-2.5 text-sm font-medium transition-colors
+              className={`flex items-center gap-3 px-5 py-2.5 text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]
                 ${isActive
-                  ? 'bg-white/15 text-white border-s-4 border-green'
-                  : 'text-white/70 hover:bg-white/5 hover:text-white'
+                  ? 'bg-white/15 text-white border-s-4 border-green shadow-sm'
+                  : 'text-white/70 hover:bg-white/10 hover:text-white'
                 }`}
             >
               <Icon size={18} />

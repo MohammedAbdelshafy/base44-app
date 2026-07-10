@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -44,7 +44,7 @@ export default function LinkPropertyDialog({ open, user, buildings, users, onClo
     if (!selected) return;
     setSaving(true);
     try {
-      await base44.entities.User.update(user.id, { building_id: selected });
+      await supabase.from('users').update({ building_id: selected }).eq('id', user.id);
       toast({ title: t('linked') });
       onSaved();
       onClose();
@@ -58,7 +58,7 @@ export default function LinkPropertyDialog({ open, user, buildings, users, onClo
   async function handleUnlink() {
     setSaving(true);
     try {
-      await base44.entities.User.update(user.id, { building_id: '' });
+      await supabase.from('users').update({ building_id: '' }).eq('id', user.id);
       toast({ title: t('unlinked') });
       onSaved();
       onClose();

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +23,7 @@ export default function EditCustomerDialog({ open, user, onClose, onSaved }) {
   async function handleSave() {
     setSaving(true);
     try {
-      await base44.entities.User.update(user.id, { full_name: name, phone });
+      await supabase.from('users').update({ full_name: name, phone }).eq('id', user.id);
       toast({ title: t('saved') });
       onSaved();
       onClose();

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
+import { uploadFile } from '@/api/uploadFile';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
 import { todayCairo, nowCairo, formatDate } from '@/lib/dateUtils';
@@ -44,7 +45,7 @@ export default function Warehouse() {
 
   // One-tap dump: creates immediately, then opens optional detail dialog
   async function quickLogDump(vehicle) {
-    const dump = await base44.entities.Dump.create({
+    const dump = await supabase.from('dumps').insert([{
       vehicle_id: vehicle.id,
       vehicle_name: vehicle.name,
       timestamp: nowCairo().toISOString(),
@@ -52,8 +53,8 @@ export default function Warehouse() {
       logged_by_name: user?.full_name || user?.email || '',
       weight_kg: null,
       waste_type: null,
-      photo: null,
-    });
+photo: null,
+    }]);
     toast({ title: t('dump_recorded') });
     setDetailDialog({ vehicle, dumpId: dump.id });
     setDetailForm({ weight_kg: '', waste_type: '', photo: null });
@@ -65,11 +66,11 @@ export default function Warehouse() {
     const vehicle = detailDialog.vehicle;
     let photoUrl = '';
     if (detailForm.photo) {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file: detailForm.photo });
+      const { file_url } = await uploadFile(detailForm.photo );
       photoUrl = file_url;
     }
-    await base44.entities.Dump.update(detailDialog.dumpId, {
-      weight_kg: detailForm.weight_kg ? Number(detailForm.weight_kg) : null,
+    await supabase.from('dumps').update({
+      weight_kg: detailForm.weight_kg ? Number(detailForm.weight_kg).eq('id', detailDialog.dumpId) : null,
       waste_type: detailForm.waste_type || null,
       photo: photoUrl || null,
     });

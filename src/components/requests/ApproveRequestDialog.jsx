@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -38,24 +38,24 @@ export default function ApproveRequestDialog({ building, onClose, onApproved }) 
   async function handleApprove() {
     setSaving(true);
     try {
-      await base44.entities.Building.update(building.id, {
+      await supabase.from('buildings').update({
         status: 'active',
         collection_frequency: frequency,
         collection_weekdays: weekdays,
         rep_code: repCode,
-      });
+      }).eq('id', building.id);
       if (createSub) {
         const today = new Date().toISOString().split('T')[0];
         const trialEnd = new Date();
         trialEnd.setMonth(trialEnd.getMonth() + 1);
-        await base44.entities.Subscription.create({
+        await supabase.from('subscriptions').insert([{
           building_id: building.id,
           plan_name: 'Warraq Building Collection',
           status: 'trialing',
           monthly_price: Number(monthlyPrice) || 100,
           trial_start_date: today,
           trial_end_date: trialEnd.toISOString().split('T')[0],
-        });
+        }]);
       }
       toast({ title: t('approved_success') });
       onApproved();

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
+import { uploadFile } from '@/api/uploadFile';
 import { useLang } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,7 +50,7 @@ export default function DoormanSignup() {
     }
     setSubmitting(true);
     try {
-      const res = await base44.functions.invoke('bawabSignup', {
+      const res = await supabase.functions.invoke('bawabSignup', { body: {
         name: form.name,
         phone: form.phone,
         address: form.address,
@@ -59,7 +60,7 @@ export default function DoormanSignup() {
         photo: form.photo,
         num_floors: form.num_floors ? Number(form.num_floors) : null,
         num_apartments: form.num_apartments ? Number(form.num_apartments) : null,
-      });
+      }});
       if (res?.building_id) localStorage.setItem('bawab_building_id', res.building_id);
       setDone(true);
     } catch (err) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { formatDateTime } from '@/lib/dateUtils';
 import PageHeader from '@/components/shared/PageHeader';
@@ -25,7 +25,7 @@ export default function NewRequests() {
   const [typeFilter, setTypeFilter] = useState('all');
 
   async function load() {
-    const all = await base44.entities.Building.list('-created_date');
+    const all = (await supabase.from('buildings').select('*').order('created_at', { ascending: false })).data;
     setBuildings(all.filter(b => b.status === 'pickup_requested'));
     setLoading(false);
   }
@@ -36,7 +36,7 @@ export default function NewRequests() {
     if (!rejectReason.trim()) return;
     setRejecting(true);
     try {
-      await base44.entities.Building.update(rejectTarget.id, { status: 'rejected', rejection_reason: rejectReason });
+      await supabase.from('buildings').update({ status: 'rejected', rejection_reason: rejectReason }).eq('id', rejectTarget.id);
       setRejectTarget(null);
       setRejectReason('');
       toast({ title: t('rejected_success') });
@@ -77,7 +77,7 @@ export default function NewRequests() {
               </div>
               <div className="flex flex-col items-end gap-1">
                 <PropertyTypeBadge type={b.property_type} />
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{formatDateTime(b.created_date)}</span>
+                <span className="text-xs text-muted-foreground whitespace-nowrap">{formatDateTime(b.created_at)}</span>
               </div>
             </div>
 

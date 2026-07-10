@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
+import { uploadFile } from '@/api/uploadFile';
 import { useLang } from '@/lib/i18n';
 import PageHeader from '@/components/shared/PageHeader';
 import SearchFilter from '@/components/shared/SearchFilter';
@@ -50,7 +51,7 @@ export default function Drivers() {
     if (!inviteEmail.trim()) return;
     setSaving(true);
     try {
-      await base44.users.inviteUser(inviteEmail.trim(), 'driver');
+      await supabase.functions.invoke('inviteUser', { body: { email: inviteEmail.trim(), role: 'driver' } });
       toast({ title: t('invite_driver') });
       setInviteOpen(false);
       setInviteEmail('');
@@ -88,14 +89,14 @@ export default function Drivers() {
   async function saveDriver() {
     setSaving(true);
     try {
-      await base44.entities.User.update(editDriver.id, {
+      await supabase.from('users').update({
         full_name: editForm.full_name,
         phone: editForm.phone,
         photo: editForm.photo,
         assigned_vehicle_id: editForm.assigned_vehicle_id,
         assigned_vehicle_name: editForm.assigned_vehicle_name,
         is_active: editForm.is_active,
-      });
+      }).eq('id', editDriver.id);
       toast({ title: t('save') });
       setEditDriver(null);
       load();
@@ -110,10 +111,10 @@ export default function Drivers() {
     setSaving(true);
     try {
       const target = drivers.find(d => d.id === targetDriver);
-      const pickups = await base44.entities.Pickup.filter({ assigned_driver_id: reassignSource.id, status: 'pending' });
+      const pickups = (await supabase.from('pickups').select('*').match({ assigned_driver_id: reassignSource.id }).order('status', { ascending: true })).data;
       if (pickups.length > 0) {
-        await base44.entities.Pickup.bulkUpdate(
-          pickups.map(p => ({ id: p.id, assigned_driver_id: targetDriver, assigned_driver_name: target?.full_name || '' }))
+        await supabase.from('pickups').update({ assigned_driver_id: targetDriver, assigned_driver_name: target?.full_name || '' }).in('id', 
+          pickups.map(p => ({ id: p.id }))
         );
       }
       toast({ title: `${pickups.length} pickups reassigned` });

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { formatDateTime } from '@/lib/dateUtils';
 import PageHeader from '@/components/shared/PageHeader';
@@ -129,7 +129,7 @@ export default function Customers() {
                       )}
                     </td>
                     <td className="p-3 hidden lg:table-cell">{sub ? <StatusBadge status={sub.status} /> : '—'}</td>
-                    <td className="p-3 hidden lg:table-cell text-xs text-muted-foreground">{formatDateTime(u.created_date)}</td>
+                    <td className="p-3 hidden lg:table-cell text-xs text-muted-foreground">{formatDateTime(u.created_at)}</td>
                     <td className="p-3">
                       <div className="flex items-center gap-1">
                         {building ? (

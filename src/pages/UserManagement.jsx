@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { useLang } from '@/lib/i18n';
 import { formatDateTime } from '@/lib/dateUtils';
@@ -43,8 +43,8 @@ export default function UserManagement() {
     const accepted = inv.filter(i => emailSet.has((i.email || '').toLowerCase()));
     if (accepted.length) {
       try {
-        await base44.entities.Invitation.bulkUpdate(
-          accepted.map(i => ({ id: i.id, status: 'accepted' }))
+        await supabase.from('invitations').update({ status: 'accepted' }).in('id', 
+          accepted.map(i => ({ id: i.id }))
         );
       } catch (_e) { /* non-fatal */ }
       setInvitations(inv.filter(i => !emailSet.has((i.email || '').toLowerCase())));
@@ -61,15 +61,15 @@ export default function UserManagement() {
       // The platform's inviteUser only accepts 'user'/'admin'; invite as 'user'
       // and store the intended staff role on an Invitation record, which the
       // login guard resolves at first login.
-      await base44.users.inviteUser(inviteForm.email, 'user');
-      await base44.entities.Invitation.create({
+      await supabase.functions.invoke('inviteUser', { body: { email: inviteForm.email, role: 'user' } });
+      await supabase.from('invitations').insert([{
         email: inviteForm.email,
         intended_role: inviteForm.role,
         status: 'pending',
         invited_by_id: currentUser?.id || '',
         invited_by_name: currentUser?.full_name || '',
         invited_at: new Date().toISOString(),
-      });
+      }]);
       toast({ title: t('invite_sent') });
       setInviteOpen(false);
       setInviteForm({ email: '', role: 'driver' });
@@ -83,7 +83,7 @@ export default function UserManagement() {
 
   async function handleResend(inv) {
     try {
-      await base44.users.inviteUser(inv.email, 'user');
+      await supabase.functions.invoke('inviteUser', { body: { email: inv.email, role: 'user' } });
       toast({ title: t('invite_sent') });
     } catch (e) {
       toast({ title: e.message || String(e), variant: 'destructive' });
@@ -91,13 +91,13 @@ export default function UserManagement() {
   }
 
   async function handleCancelInvite(inv) {
-    await base44.entities.Invitation.update(inv.id, { status: 'cancelled' });
+    await supabase.from('invitations').update({ status: 'cancelled' }).eq('id', inv.id);
     load();
   }
 
   async function handleUpdateRole() {
     setSaving(true);
-    await base44.entities.User.update(editUser.id, { role: editRole, rep_code: editRepCode });
+    await supabase.from('users').update({ role: editRole, rep_code: editRepCode }).eq('id', editUser.id);
     setSaving(false);
     setEditUser(null);
     load();
@@ -172,7 +172,7 @@ export default function UserManagement() {
                     <span className="text-xs bg-navy/10 text-navy px-2 py-0.5 rounded-full font-semibold">{t(u.role)}</span>
                   )}
                 </td>
-                <td className="p-3 hidden md:table-cell text-xs text-muted-foreground">{formatDateTime(u.created_date)}</td>
+                <td className="p-3 hidden md:table-cell text-xs text-muted-foreground">{formatDateTime(u.created_at)}</td>
                 <td className="p-3">
                   <div className="flex items-center gap-1">
                     {(!u.role || u.role === 'user') && (

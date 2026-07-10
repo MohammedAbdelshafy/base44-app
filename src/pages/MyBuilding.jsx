@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
 import { todayCairo } from '@/lib/dateUtils';
@@ -21,7 +21,7 @@ export default function MyBuilding() {
   const [mode, setMode] = useState('view');
 
   async function loadBuilding(buildingId) {
-    const b = await base44.entities.Building.get(buildingId);
+    const b = (await supabase.from('buildings').select('*').eq('id', buildingId).single()).data;
     setBuilding(b);
     return b;
   }
@@ -31,7 +31,7 @@ export default function MyBuilding() {
       if (!user?.building_id) { setLoading(false); return; }
       try {
         await loadBuilding(user.building_id);
-        const all = await base44.entities.Pickup.filter({ building_id: user.building_id }, 'date');
+        const all = (await supabase.from('pickups').select('*').match({ building_id: user.building_id }).order('date', { ascending: true })).data;
         setPickups(all);
       } catch (err) {}
       setLoading(false);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
+import { uploadFile } from '@/api/uploadFile';
 import { useLang } from '@/lib/i18n';
 import { nowCairo } from '@/lib/dateUtils';
 import { calcProfit, MATERIALS, UNITS } from '@/lib/dealUtils';
@@ -86,9 +87,9 @@ export default function DealForm({ open, onClose, deal, bangers, onSaved }) {
       if (!deal) {
         data.lead_date = nowCairo().toISOString();
         data.status = 'lead';
-        await base44.entities.Deal.create(data);
+        await supabase.from('deals').insert([data]);
       } else {
-        await base44.entities.Deal.update(deal.id, data);
+        await supabase.from('deals').update(data).eq('id', deal.id);
       }
       toast({ title: t('save') });
       onSaved();

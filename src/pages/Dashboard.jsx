@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { todayCairo, formatDateTime } from '@/lib/dateUtils';
 import PageHeader from '@/components/shared/PageHeader';
 import { Link } from 'react-router-dom';
-import { Building2, CheckCircle, Clock, Truck, Activity, Handshake, TrendingUp, Inbox, ChevronLeft } from 'lucide-react';
+import { Building2, CheckCircle, Clock, Truck, Activity, Handshake, TrendingUp, Inbox, ChevronLeft, Calendar } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { PropertyTypeFilter } from '@/components/shared/PropertyTypeSelect';
@@ -77,9 +78,9 @@ export default function Dashboard() {
   visibleSubs.forEach(s => { subStatusMap[s.building_id] = s.status; });
 
   const activities = [
-    ...visibleBuildings.slice(0, 5).map(b => ({ type: 'building', label: t('building_registered'), name: b.name, date: b.created_date })),
-    ...pickups.filter(p => p.status === 'done').slice(0, 5).map(p => ({ type: 'pickup', label: t('pickup_completed'), name: p.building_name, date: p.completion_timestamp || p.created_date })),
-    ...payments.slice(0, 5).map(p => ({ type: 'payment', label: t('payment_recorded'), name: p.building_name, date: p.created_date })),
+    ...visibleBuildings.slice(0, 5).map(b => ({ type: 'building', label: t('building_registered'), name: b.name, date: b.created_at })),
+    ...pickups.filter(p => p.status === 'done').slice(0, 5).map(p => ({ type: 'pickup', label: t('pickup_completed'), name: p.building_name, date: p.completion_timestamp || p.created_at })),
+    ...payments.slice(0, 5).map(p => ({ type: 'payment', label: t('payment_recorded'), name: p.building_name, date: p.created_at })),
     ...todayDumps.slice(0, 5).map(d => ({ type: 'dump', label: t('dump_logged'), name: d.vehicle_name, date: d.timestamp })),
   ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10);
 
@@ -130,18 +131,25 @@ export default function Dashboard() {
         {statCards.map((card, i) => {
           const Icon = card.icon;
           return (
-            <div key={i} className="bg-white rounded-xl p-4 border shadow-sm">
-              <div className="flex items-start justify-between">
+            <motion.div 
+              key={i} 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1, duration: 0.4 }}
+              className="glass-panel rounded-2xl p-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group"
+            >
+              <div className="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-white/40 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl" />
+              <div className="flex items-start justify-between relative z-10">
                 <div>
-                  <p className="text-xs text-muted-foreground font-medium">{card.label}</p>
-                  <p className="text-2xl font-bold text-navy mt-1">{card.value}</p>
-                  {card.sub && <p className="text-xs text-muted-foreground mt-0.5">{card.sub}</p>}
+                  <p className="text-sm text-muted-foreground font-semibold">{card.label}</p>
+                  <p className="text-3xl font-extrabold text-gradient mt-1">{card.value}</p>
+                  {card.sub && <p className="text-xs text-muted-foreground mt-1 bg-white/50 inline-block px-2 py-0.5 rounded-full">{card.sub}</p>}
                 </div>
-                <div className={`${card.color} p-2 rounded-lg`}>
-                  <Icon size={18} className="text-white" />
+                <div className={`${card.color.replace('bg-', 'bg-gradient-to-br from-').replace('navy', 'navy to-blue-800').replace('cyan', 'cyan to-blue-400').replace('green', 'green to-emerald-500')} p-3 rounded-xl shadow-lg`}>
+                  <Icon size={20} className="text-white" />
                 </div>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>
@@ -151,69 +159,101 @@ export default function Dashboard() {
         {dealStatCards.map((card, i) => {
           const Icon = card.icon;
           return (
-            <div key={i} className="bg-white rounded-xl p-4 border shadow-sm">
-              <div className="flex items-start justify-between">
+            <motion.div 
+              key={i} 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + (i * 0.1), duration: 0.4 }}
+              className="glass-panel rounded-2xl p-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group"
+            >
+              <div className="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-white/40 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl" />
+              <div className="flex items-start justify-between relative z-10">
                 <div>
-                  <p className="text-xs text-muted-foreground font-medium">{card.label}</p>
-                  <p className="text-2xl font-bold text-navy mt-1" dir="ltr">{card.value}</p>
+                  <p className="text-sm text-muted-foreground font-semibold">{card.label}</p>
+                  <p className="text-3xl font-extrabold text-gradient mt-1" dir="ltr">{card.value}</p>
                 </div>
-                <div className={`${card.color} p-2 rounded-lg`}>
-                  <Icon size={18} className="text-white" />
+                <div className={`${card.color.replace('bg-', 'bg-gradient-to-br from-').replace('navy', 'navy to-blue-800').replace('cyan', 'cyan to-blue-400').replace('green', 'green to-emerald-500')} p-3 rounded-xl shadow-lg`}>
+                  <Icon size={20} className="text-white" />
                 </div>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Map */}
-        <div className="lg:col-span-2 bg-white rounded-xl border shadow-sm overflow-hidden">
-          <div className="p-4 border-b flex items-center justify-between">
-            <h2 className="font-semibold text-navy">{t('buildings')}</h2>
-            <div className="hidden sm:flex flex-wrap gap-2">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="lg:col-span-2 glass-panel rounded-2xl overflow-hidden flex flex-col"
+        >
+          <div className="p-5 border-b bg-white/40 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-navy">{t('buildings')}</h2>
+            <div className="hidden sm:flex flex-wrap gap-3">
               {PROPERTY_TYPES.map(pt => (
-                <span key={pt.value} className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: getTypeColor(pt.value) }} />
+                <span key={pt.value} className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-white/60 px-2 py-1 rounded-md shadow-sm">
+                  <span className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: getTypeColor(pt.value) }} />
                   {t(pt.labelKey)}
                 </span>
               ))}
             </div>
           </div>
-          <div className="h-80">
-            <MapContainer center={center} zoom={14} className="h-full w-full" scrollWheelZoom={false}>
+          <div className="h-80 relative">
+            <MapContainer center={center} zoom={14} className="h-full w-full z-0" scrollWheelZoom={false}>
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
               {gpsBuildings.map(b => (
                 <Marker key={b.id} position={[b.gps_lat, b.gps_lng]} icon={pinIcon(getTypeColor(b.property_type))}>
-                  <Popup>
-                    <strong>{b.name}</strong><br />
-                    {b.address}<br />
-                    <span className="text-xs">{t(subStatusMap[b.id] || 'trialing')}</span>
+                  <Popup className="rounded-lg shadow-xl">
+                    <strong className="text-navy">{b.name}</strong><br />
+                    <span className="text-muted-foreground text-sm">{b.address}</span><br />
+                    <span className="inline-block mt-1 px-2 py-0.5 bg-green/10 text-green rounded text-xs font-bold">{t(subStatusMap[b.id] || 'trialing')}</span>
                   </Popup>
                 </Marker>
               ))}
             </MapContainer>
+            <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_20px_rgba(0,0,0,0.05)] z-10" />
           </div>
-        </div>
+        </motion.div>
 
         {/* Activity Feed */}
-        <div className="bg-white rounded-xl border shadow-sm">
-          <div className="p-4 border-b">
-            <h2 className="font-semibold text-navy">{t('recent_activity')}</h2>
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+          className="glass-panel rounded-2xl flex flex-col"
+        >
+          <div className="p-5 border-b bg-white/40">
+            <h2 className="text-lg font-bold text-navy">{t('recent_activity')}</h2>
           </div>
-          <div className="divide-y max-h-80 overflow-auto">
+          <div className="flex-1 overflow-auto p-2">
             {activities.length === 0 && (
               <p className="p-4 text-sm text-muted-foreground text-center">{t('no_data')}</p>
             )}
-            {activities.map((a, i) => (
-              <div key={i} className="px-4 py-3">
-                <p className="text-sm font-medium">{a.label}</p>
-                <p className="text-xs text-muted-foreground">{a.name}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{formatDateTime(a.date)}</p>
-              </div>
-            ))}
+            <div className="space-y-1 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:ml-6 md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-navy/20 before:to-transparent">
+              {activities.map((a, i) => (
+                <motion.div 
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.6 + (i * 0.1) }}
+                  key={i} 
+                  className="relative pl-8 md:pl-10 py-3 group"
+                >
+                  <div className="absolute left-1 md:left-2 top-4 w-3 h-3 bg-white border-2 border-cyan rounded-full group-hover:scale-125 transition-transform shadow-sm" />
+                  <div className="bg-white/60 hover:bg-white/90 transition-colors rounded-xl p-3 shadow-sm border border-white/50">
+                    <p className="text-sm font-bold text-navy">{a.label}</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">{a.name}</p>
+                    <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1 opacity-70">
+                      <Calendar size={12} />
+                      {formatDateTime(a.date)}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { formatDateTime } from '@/lib/dateUtils';
 import PageHeader from '@/components/shared/PageHeader';
@@ -23,8 +23,8 @@ export default function Vehicles() {
   const [saving, setSaving] = useState(false);
 
   async function load() {
-    const v = await base44.entities.Vehicle.list('-created_date');
-    setVehicles(v);
+    const { data } = await supabase.from('vehicles').select('*').order('created_at', { ascending: false });
+    if (data) setVehicles(data);
     setLoading(false);
   }
   useEffect(() => { load(); }, []);
@@ -43,9 +43,9 @@ export default function Vehicles() {
   async function handleSave() {
     setSaving(true);
     if (editVehicle) {
-      await base44.entities.Vehicle.update(editVehicle.id, form);
+      await supabase.from('vehicles').update(form).eq('id', editVehicle.id);
     } else {
-      await base44.entities.Vehicle.create(form);
+      await supabase.from('vehicles').insert([form]);
     }
     setSaving(false);
     setFormOpen(false);
@@ -101,7 +101,7 @@ export default function Vehicles() {
                 <td className="p-3" dir="ltr">{v.plate_number}</td>
                 <td className="p-3">{t(v.vehicle_type)}</td>
                 <td className="p-3">{v.is_active ? '✓' : '✗'}</td>
-                <td className="p-3 hidden md:table-cell text-xs text-muted-foreground">{formatDateTime(v.created_date)}</td>
+                <td className="p-3 hidden md:table-cell text-xs text-muted-foreground">{formatDateTime(v.created_at)}</td>
                 <td className="p-3">
                   <Button variant="ghost" size="icon" onClick={() => openForm(v)}><Edit2 size={16} /></Button>
                 </td>

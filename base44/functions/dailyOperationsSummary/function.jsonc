@@ -1,0 +1,16 @@
+{
+  "name": "dailyOperationsSummary",
+  "entry": "entry.ts",
+  "automations": [
+    {
+      "type": "scheduled",
+      "name": "daily_midnight_report",
+      "description": "Generates daily operations summary CSV every night at midnight Cairo time",
+      "function_args": { "mode": "store_only" },
+      "is_active": true,
+      "schedule_mode": "recurring",
+      "schedule_type": "cron",
+      "cron_expression": "0 22 * * ?"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,7 @@ export default function CustomerAwaitingApproval({ building, onUpdated }) {
   async function savePhone() {
     setSavingPhone(true);
     try {
-      await base44.entities.Building.update(building.id, { bawab_phone: phone });
+      await supabase.from('buildings').update({ bawab_phone: phone }).eq('id', building.id);
       setEditingPhone(false);
       onUpdated();
     } catch (e) {

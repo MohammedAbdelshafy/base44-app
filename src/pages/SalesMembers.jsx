@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { useLang } from '@/lib/i18n';
 import { formatDateTime } from '@/lib/dateUtils';
 import PageHeader from '@/components/shared/PageHeader';
@@ -23,7 +23,7 @@ export default function SalesMembers() {
   const [saving, setSaving] = useState(false);
 
   async function load() {
-    const m = await base44.entities.SalesMember.list('-created_date');
+    const m = (await supabase.from('sales_members').select('*').order('created_at', { ascending: false })).data;
     setMembers(m);
     setLoading(false);
   }
@@ -43,9 +43,9 @@ export default function SalesMembers() {
   async function handleSave() {
     setSaving(true);
     if (editMember) {
-      await base44.entities.SalesMember.update(editMember.id, form);
+      await supabase.from('sales_members').update(form).eq('id', editMember.id);
     } else {
-      await base44.entities.SalesMember.create(form);
+      await supabase.from('sales_members').insert([form]);
     }
     setSaving(false);
     setFormOpen(false);
@@ -103,7 +103,7 @@ export default function SalesMembers() {
                 <td className="p-3">{t(m.member_role)}</td>
                 <td className="p-3 font-mono">{m.rep_code || '—'}</td>
                 <td className="p-3">{m.is_active ? '✓' : '✗'}</td>
-                <td className="p-3 hidden md:table-cell text-xs text-muted-foreground">{formatDateTime(m.created_date)}</td>
+                <td className="p-3 hidden md:table-cell text-xs text-muted-foreground">{formatDateTime(m.created_at)}</td>
                 <td className="p-3">
                   <Button variant="ghost" size="icon" onClick={() => openForm(m)}><Edit2 size={16} /></Button>
                 </td>
