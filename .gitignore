@@ -26,6 +26,13 @@
 !/TOOLS.md
 !/USER.md
 !/HEARTBEAT.md
+!/server/
+!/supabase/
+!/supabase/**
+!/supabase/functions/**
+!/supabase/migrations/**
+!/.github/
+!/.github/**
 
 # env
 .env

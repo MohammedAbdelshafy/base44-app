@@ -32,3 +32,21 @@ npx skills add base44/skills
 - Prefer the existing Base44 CLI workflow over adding new npm scripts for Base44-specific tasks.
 - Reuse the existing SDK client and Vite plugin patterns before adding new Base44 integration paths.
 - Run the relevant checks from `package.json` before finishing code changes.
+
+## CI Pipeline
+
+A GitHub Actions workflow (`.github/workflows/check.yml`) runs automatically on every push/PR:
+1. **lint** — `npm run lint` (unused imports, code quality)
+2. **typecheck** — `npm run typecheck` (TypeScript errors)
+3. **build** — `npm run build` (Vite production build)
+4. **auto-fix** — runs `lint:fix` and auto-commits fixes on master
+
+The pipeline auto-fixes lint issues and commits them back. All three checks must pass before merging.
+
+## Email Queue System
+
+- `email_queue` table: statuses `qued` (ready), `queo` (skip), `sent`, `failed`
+- **Send**: Supabase Edge Function `send-email-queue` + pg_cron hourly at `:00`
+- **Queue**: Edge Function `add-to-email-queue` (POST with `recipient_email`, `subject`, `body`)
+- **Local**: `npm run send-emails` or `POST /api/email-queue` on Express server
+- **From app**: `import { queueEmail } from '@/api/emailQueue'`
