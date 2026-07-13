@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
+import { dataAccess } from '@/api/dataAccess';
 import { uploadFile } from '@/api/uploadFile';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
-import { todayCairo, nowCairo, formatDate } from '@/lib/dateUtils';
+import { todayCairo, nowCairo } from '@/lib/dateUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -25,13 +26,18 @@ export default function Warehouse() {
   const [summaryDate, setSummaryDate] = useState(todayCairo());
 
   async function load() {
-    const [v, d] = await Promise.all([
-      base44.entities.Vehicle.list(),
-      base44.entities.Dump.list('-created_date', 200),
-    ]);
-    setVehicles(v);
-    setDumps(d);
-    setLoading(false);
+    try {
+      const [v, d] = await Promise.all([
+        dataAccess.vehicles.list(),
+        dataAccess.dumps.list('-created_date', 200),
+      ]);
+      setVehicles(v);
+      setDumps(d);
+    } catch (err) {
+      console.error('Warehouse load failed:', err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { load(); }, []);
@@ -45,7 +51,7 @@ export default function Warehouse() {
 
   // One-tap dump: creates immediately, then opens optional detail dialog
   async function quickLogDump(vehicle) {
-    const dump = await supabase.from('dumps').insert([{
+    const { data: dumpData } = await supabase.from('dumps').insert([{
       vehicle_id: vehicle.id,
       vehicle_name: vehicle.name,
       timestamp: nowCairo().toISOString(),
@@ -54,9 +60,9 @@ export default function Warehouse() {
       weight_kg: null,
       waste_type: null,
 photo: null,
-    }]);
+    }]).select().single();
     toast({ title: t('dump_recorded') });
-    setDetailDialog({ vehicle, dumpId: dump.id });
+    setDetailDialog({ vehicle, dumpId: dumpData?.id });
     setDetailForm({ weight_kg: '', waste_type: '', photo: null });
     load();
   }
@@ -70,10 +76,10 @@ photo: null,
       photoUrl = file_url;
     }
     await supabase.from('dumps').update({
-      weight_kg: detailForm.weight_kg ? Number(detailForm.weight_kg).eq('id', detailDialog.dumpId) : null,
+      weight_kg: detailForm.weight_kg ? Number(detailForm.weight_kg) : null,
       waste_type: detailForm.waste_type || null,
       photo: photoUrl || null,
-    });
+    }).eq('id', detailDialog.dumpId);
     setSaving(false);
     setDetailDialog(null);
     toast({ title: t('save_details') });

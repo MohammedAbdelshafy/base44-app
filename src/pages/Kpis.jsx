@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/api/supabaseClient';
+import { dataAccess } from '@/api/dataAccess';
 import { useLang } from '@/lib/i18n';
 import { currentYM, buildLastMonths, computeGrowth, computeSubscriptions, computeRevenue, computeSales } from '@/lib/kpiUtils';
 import PageHeader from '@/components/shared/PageHeader';
@@ -17,21 +17,25 @@ export default function Kpis() {
 
   useEffect(() => {
     Promise.all([
-      base44.entities.Building.list('-created_date', 500),
-      base44.entities.Subscription.list(),
-      base44.entities.Payment.list('-created_date', 500),
-      base44.entities.Deal.list('-created_date', 500),
-      base44.entities.Commission.list('-created_date', 500),
-      base44.entities.SalesMember.list(),
+      dataAccess.buildings.list('-created_date', 500),
+      dataAccess.subscriptions.list(),
+      dataAccess.payments.list('-created_date', 500),
+      dataAccess.deals.list('-created_date', 500),
+      dataAccess.commissions.list('-created_date', 500),
+      dataAccess.salesMembers.list(),
     ]).then(([buildings, subscriptions, payments, deals, commissions, salesMembers]) => {
       setData({ buildings, subscriptions, payments, deals, commissions, salesMembers });
+    }).catch(err => {
+      console.error('KPIs load failed:', err);
+      setData({ buildings: [], subscriptions: [], payments: [], deals: [], commissions: [], salesMembers: [] });
     });
   }, []);
 
   if (!data) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
         <div className="w-8 h-8 border-4 border-navy/20 border-t-navy rounded-full animate-spin" />
+        <p className="text-sm text-muted-foreground">{t('loading')}</p>
       </div>
     );
   }

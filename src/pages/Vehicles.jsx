@@ -59,7 +59,12 @@ export default function Vehicles() {
   }
 
   if (loading) {
-    return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-navy/20 border-t-navy rounded-full animate-spin" /></div>;
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <div className="w-8 h-8 border-4 border-navy/20 border-t-navy rounded-full animate-spin" />
+        <p className="text-sm text-muted-foreground">{t('loading')}</p>
+      </div>
+    );
   }
 
   return (
@@ -124,7 +129,7 @@ export default function Vehicles() {
               <Select value={form.vehicle_type} onValueChange={v => setForm(p => ({ ...p, vehicle_type: v }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {['tuk-tuk', 'motorcycle-cart', 'pickup'].map(vt => (
+                  {['tuk-tuk', 'motorcycle-cart', 'vehicle_pickup'].map(vt => (
                     <SelectItem key={vt} value={vt}>{t(vt)}</SelectItem>
                   ))}
                 </SelectContent>

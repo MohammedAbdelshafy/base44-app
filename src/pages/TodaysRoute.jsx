@@ -26,16 +26,21 @@ export default function TodaysRoute() {
   const [uploading, setUploading] = useState(false);
 
   async function load() {
-    const today = todayCairo();
-    const allPickups = (await supabase.from('pickups').select('*').eq('date', today).order('sort_order', { ascending: true })).data;
-    const buildingIds = [...new Set(allPickups.map(p => p.building_id))];
-    let blds = [];
-    if (buildingIds.length > 0) {
-      blds = (await supabase.from('buildings').select('*')).data;
+    try {
+      const today = todayCairo();
+      const allPickups = (await supabase.from('pickups').select('*').eq('date', today).order('sort_order', { ascending: true })).data;
+      const buildingIds = [...new Set(allPickups.map(p => p.building_id))];
+      let blds = [];
+      if (buildingIds.length > 0) {
+        blds = (await supabase.from('buildings').select('*')).data;
+      }
+      setPickups(allPickups);
+      setBuildings(blds);
+    } catch (err) {
+      console.error('TodaysRoute load failed:', err);
+    } finally {
+      setLoading(false);
     }
-    setPickups(allPickups);
-    setBuildings(blds);
-    setLoading(false);
   }
 
   useEffect(() => { load(); }, []);
@@ -54,7 +59,7 @@ export default function TodaysRoute() {
       status: 'done',
       completion_photo: photoUrl,
       completion_timestamp: nowCairo().toISOString(),
-    });
+    }).eq('id', pickupId);
     setUploading(false);
     setDoneDialog(null);
     toast({ title: t('done') });

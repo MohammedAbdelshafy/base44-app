@@ -62,7 +62,7 @@ export default function DealForm({ open, onClose, deal, bangers, onSaved }) {
 
   async function uploadAttachment(file) {
     setUploading(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    const { file_url } = await uploadFile(file);
     setForm(prev => ({ ...prev, attachments: [...(prev.attachments || []), file_url] }));
     setUploading(false);
   }

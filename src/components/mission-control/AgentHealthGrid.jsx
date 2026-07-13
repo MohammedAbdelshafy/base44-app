@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Activity, Heart, AlertTriangle, Cpu, Zap } from 'lucide-react';
+import { Activity, Heart, AlertTriangle, Zap } from 'lucide-react';
 
 const AGENT_ICONS = {
   jarvis:    '🧠',

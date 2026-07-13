@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  ArrowLeft, Pause, Play, RefreshCw, XCircle,
+  ArrowLeft, Pause, Play, RefreshCw,
   Clock, Zap, DollarSign, GitBranch, Activity
 } from 'lucide-react';
 

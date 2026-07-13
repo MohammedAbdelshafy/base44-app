@@ -1,6 +1,5 @@
 import React from 'react';
 import { useLang } from '@/lib/i18n';
-import { Badge } from '@/components/ui/badge';
 
 const statusStyles = {
   trialing: 'bg-cyan/15 text-cyan border-cyan/30',

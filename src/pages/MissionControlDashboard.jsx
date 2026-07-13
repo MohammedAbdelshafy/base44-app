@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
-  Rocket, Activity, Cpu, Zap, DollarSign,
-  Plus, RefreshCw, Clock, CheckCircle2, XCircle,
-  LayoutGrid, List, Search, Filter
+  Rocket, Activity, Zap,
+  Plus, Clock, CheckCircle2, XCircle
 } from 'lucide-react';
 
 import MissionCard from '../components/mission-control/MissionCard';

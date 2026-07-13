@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/api/supabaseClient';
+import { dataAccess } from '@/api/dataAccess';
 import { useLang } from '@/lib/i18n';
 import { todayCairo, formatDateTime } from '@/lib/dateUtils';
 import PageHeader from '@/components/shared/PageHeader';
@@ -33,12 +33,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     Promise.all([
-      base44.entities.Building.list(),
-      base44.entities.Subscription.list(),
-      base44.entities.Pickup.filter({ date: todayCairo() }),
-      base44.entities.Dump.list('-created_date', 50),
-      base44.entities.Payment.list('-created_date', 10),
-      base44.entities.Deal.list('-created_date', 200),
+      dataAccess.buildings.list(),
+      dataAccess.subscriptions.list(),
+      dataAccess.pickups.filter({ date: todayCairo() }),
+      dataAccess.dumps.list('-created_date', 50),
+      dataAccess.payments.list('-created_date', 10),
+      dataAccess.deals.list('-created_date', 200),
     ]).then(([b, s, p, d, pay, de]) => {
       setBuildings(b);
       setSubscriptions(s);
@@ -47,11 +47,19 @@ export default function Dashboard() {
       setPayments(pay);
       setDeals(de);
       setLoading(false);
+    }).catch(err => {
+      console.error('Dashboard load failed:', err);
+      setLoading(false);
     });
   }, []);
 
   if (loading) {
-    return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-navy/20 border-t-navy rounded-full animate-spin" /></div>;
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <div className="w-8 h-8 border-4 border-navy/20 border-t-navy rounded-full animate-spin" />
+        <p className="text-sm text-muted-foreground">{t('loading')}</p>
+      </div>
+    );
   }
 
   const todayStr = todayCairo();

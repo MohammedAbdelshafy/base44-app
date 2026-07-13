@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { supabase } from '@/api/supabaseClient';
 import { uploadFile } from '@/api/uploadFile';
 import { useLang } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
@@ -35,7 +34,7 @@ export default function CustomerBuildingRegistration({ user, onDone, onCancel })
     if (!file) return;
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await uploadFile(file);
       set('photo', file_url);
     } catch (err) {}
     setUploading(false);
@@ -54,18 +53,22 @@ export default function CustomerBuildingRegistration({ user, onDone, onCancel })
     }
     setSubmitting(true);
     try {
-      const res = await supabase.functions.invoke('bawabSignup', { body: {
-        name: form.name,
-        phone: form.phone,
-        address: form.address,
-        property_type: form.property_type,
-        gps_lat: form.gps_lat,
-        gps_lng: form.gps_lng,
-        photo: form.photo,
-        num_floors: form.num_floors ? Number(form.num_floors) : null,
-        num_apartments: form.num_apartments ? Number(form.num_apartments) : null,
-        link_user_id: user.id,
-      } });
+      const res = await fetch('/api/bawab-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          phone: form.phone,
+          address: form.address,
+          property_type: form.property_type,
+          gps_lat: form.gps_lat,
+          gps_lng: form.gps_lng,
+          photo: form.photo,
+          num_floors: form.num_floors ? Number(form.num_floors) : null,
+          num_apartments: form.num_apartments ? Number(form.num_apartments) : null,
+          link_user_id: user.id,
+        }),
+      }).then(r => r.json());
       onDone(res?.building_id);
     } catch (err) {
       setError(err.message || 'Error');

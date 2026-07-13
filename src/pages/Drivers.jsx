@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
+import { dataAccess } from '@/api/dataAccess';
 import { uploadFile } from '@/api/uploadFile';
 import { useLang } from '@/lib/i18n';
 import PageHeader from '@/components/shared/PageHeader';
@@ -30,13 +31,18 @@ export default function Drivers() {
   const [uploading, setUploading] = useState(false);
 
   async function load() {
-    const [u, v] = await Promise.all([
-      base44.entities.User.list(),
-      base44.entities.Vehicle.list(),
-    ]);
-    setDrivers(u.filter(u => u.role === 'driver'));
-    setVehicles(v);
-    setLoading(false);
+    try {
+      const [u, v] = await Promise.all([
+        dataAccess.users.list(),
+        dataAccess.vehicles.list(),
+      ]);
+      setDrivers(u.filter(u => u.role === 'driver'));
+      setVehicles(v);
+    } catch (err) {
+      console.error('Drivers load failed:', err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { load(); }, []);
@@ -51,7 +57,23 @@ export default function Drivers() {
     if (!inviteEmail.trim()) return;
     setSaving(true);
     try {
-      await supabase.functions.invoke('inviteUser', { body: { email: inviteEmail.trim(), role: 'driver' } });
+      await supabase.from('invitations').insert([{
+        email: inviteEmail.trim(),
+        intended_role: 'driver',
+        status: 'pending',
+        invited_by_id: '',
+        invited_by_name: '',
+        invited_at: new Date().toISOString(),
+      }]);
+
+      supabase.functions.invoke('add-to-email-queue', {
+        body: {
+          recipient_email: inviteEmail.trim(),
+          subject: "You've been invited as a Driver",
+          body: `Hi,\n\nYou've been invited to join Dawrix as a Driver.\n\nPlease sign in at the app to get started.\n\n- Dawrix Team`,
+        },
+      }).catch(() => {});
+
       toast({ title: t('invite_driver') });
       setInviteOpen(false);
       setInviteEmail('');
@@ -76,7 +98,7 @@ export default function Drivers() {
 
   async function uploadPhoto(file) {
     setUploading(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    const { file_url } = await uploadFile(file);
     setEditForm(prev => ({ ...prev, photo: file_url }));
     setUploading(false);
   }
@@ -114,7 +136,7 @@ export default function Drivers() {
       const pickups = (await supabase.from('pickups').select('*').match({ assigned_driver_id: reassignSource.id }).order('status', { ascending: true })).data;
       if (pickups.length > 0) {
         await supabase.from('pickups').update({ assigned_driver_id: targetDriver, assigned_driver_name: target?.full_name || '' }).in('id', 
-          pickups.map(p => ({ id: p.id }))
+          pickups.map(p => p.id)
         );
       }
       toast({ title: `${pickups.length} pickups reassigned` });
@@ -128,7 +150,12 @@ export default function Drivers() {
   }
 
   if (loading) {
-    return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-navy/20 border-t-navy rounded-full animate-spin" /></div>;
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <div className="w-8 h-8 border-4 border-navy/20 border-t-navy rounded-full animate-spin" />
+        <p className="text-sm text-muted-foreground">{t('loading')}</p>
+      </div>
+    );
   }
 
   return (

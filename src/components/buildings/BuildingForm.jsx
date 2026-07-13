@@ -82,17 +82,31 @@ export default function BuildingForm({ open, onClose, building, onSaved }) {
   }, [building, open]);
 
   const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
+  const [validateError, setValidateError] = useState('');
 
   async function handlePhoto(e) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    const { file_url } = await uploadFile(file);
     set('photo', file_url);
     setUploading(false);
   }
 
   async function handleSave() {
+    setValidateError('');
+    if (!form.name?.trim()) {
+      setValidateError(t('building_name_required'));
+      return;
+    }
+    if (!form.address?.trim()) {
+      setValidateError(t('address_required'));
+      return;
+    }
+    if (!isSalesRep && !form.rep_code?.trim()) {
+      setValidateError(t('rep_code_required'));
+      return;
+    }
     setSaving(true);
     const data = {
       ...form,
@@ -102,19 +116,19 @@ export default function BuildingForm({ open, onClose, building, onSaved }) {
     if (building) {
       await supabase.from('buildings').update(data).eq('id', building.id);
     } else {
-      const created = await supabase.from('buildings').insert([data]);
+      const { data: createdData } = await supabase.from('buildings').insert([data]).select().single();
       // Auto-create subscription
       const today = new Date().toISOString().split('T')[0];
       const trialEnd = new Date();
       trialEnd.setMonth(trialEnd.getMonth() + 1);
       await supabase.from('subscriptions').insert([{
-        building_id: created.id,
+        building_id: createdData?.id,
         plan_name: 'Warraq Building Collection',
         status: 'trialing',
         monthly_price: 100,
         trial_start_date: today,
-trial_end_date: trialEnd.toISOString().split('T')[0],
-        }]);
+        trial_end_date: trialEnd.toISOString().split('T')[0],
+      }]);
     }
     setSaving(false);
     onSaved();

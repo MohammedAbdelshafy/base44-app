@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/api/supabaseClient';
+import { dataAccess } from '@/api/dataAccess';
 import { useLang } from '@/lib/i18n';
 import PageHeader from '@/components/shared/PageHeader';
 import { todayCairo } from '@/lib/dateUtils';
@@ -13,13 +13,16 @@ export default function Reports() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
 
+  const [error, setError] = useState(null);
+
   const loadReports = async () => {
     setLoading(true);
+    setError(null);
     try {
       const today = todayCairo();
       const [todayReports, allReports] = await Promise.all([
-        base44.entities.DailyReport.filter({ date: today, type: 'operations_summary' }),
-        base44.entities.DailyReport.list('-created_date', 50),
+        dataAccess.dailyReports.filter({ date: today, type: 'operations_summary' }),
+        dataAccess.dailyReports.list('-created_date', 50),
       ]);
       if (todayReports && todayReports.length > 0) {
         setReport(todayReports[0]);
@@ -29,6 +32,7 @@ export default function Reports() {
       setRecentReports((allReports || []).slice(0, 7));
     } catch (e) {
       console.error('Failed to load reports', e);
+      setError(t('failed_to_load_reports'));
     } finally {
       setLoading(false);
     }
@@ -39,8 +43,9 @@ export default function Reports() {
   const handleGenerate = async () => {
     setGenerating(true);
     try {
-      const res = await supabase.functions.invoke('dailyOperationsSummary', { body: { mode: 'store_only' } });
-      if (res.ok) {
+      const res = await fetch('/api/daily-report?mode=store_only');
+      const data = await res.json();
+      if (data.ok) {
         await loadReports();
       }
     } catch (e) {
@@ -75,8 +80,9 @@ export default function Reports() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
         <div className="w-8 h-8 border-4 border-navy/20 border-t-navy rounded-full animate-spin" />
+        <p className="text-sm text-muted-foreground">{t('loading')}</p>
       </div>
     );
   }
@@ -89,7 +95,7 @@ export default function Reports() {
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={loadReports} disabled={loading}>
             <RefreshCw size={14} className="mr-1" />
-            {t('refresh')}
+            {t('reload')}
           </Button>
           <Button size="sm" onClick={handleGenerate} disabled={generating}>
             <FileText size={14} className="mr-1" />

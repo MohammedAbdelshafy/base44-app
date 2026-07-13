@@ -25,7 +25,8 @@ export default function ResetPassword() {
     }
     setLoading(true);
     try {
-      await base44.auth.resetPassword({ resetToken, newPassword });
+      const { error: resetError } = await supabase.auth.updateUser({ password: newPassword });
+      if (resetError) throw resetError;
       window.location.href = "/login";
     } catch (err) {
       setError(err.message || "Failed to reset password");

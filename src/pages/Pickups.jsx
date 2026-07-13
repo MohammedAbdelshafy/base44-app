@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
+import { dataAccess } from '@/api/dataAccess';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
-import { todayCairo, formatDateTime, formatDate, nowCairo } from '@/lib/dateUtils';
+import { todayCairo, formatDateTime } from '@/lib/dateUtils';
 import PageHeader from '@/components/shared/PageHeader';
 import SearchFilter from '@/components/shared/SearchFilter';
 import StatusBadge from '@/components/shared/StatusBadge';
@@ -10,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Zap, UserPlus, Truck } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -34,15 +34,20 @@ export default function Pickups() {
   const [selectedDriver, setSelectedDriver] = useState('');
 
   async function load() {
-    const [p, b, u] = await Promise.all([
-      base44.entities.Pickup.filter({ date: dateFilter }, '-sort_order'),
-      base44.entities.Building.list(),
-      base44.entities.User.list(),
-    ]);
-    setPickups(p);
-    setBuildings(b);
-    setUsers(u);
-    setLoading(false);
+    try {
+      const [p, b, u] = await Promise.all([
+        dataAccess.pickups.filter({ date: dateFilter }, '-sort_order'),
+        dataAccess.buildings.list(),
+        dataAccess.users.list(),
+      ]);
+      setPickups(p);
+      setBuildings(b);
+      setUsers(u);
+    } catch (err) {
+      console.error('Pickups load failed:', err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { load(); }, [dateFilter]);

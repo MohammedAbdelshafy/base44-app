@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { UserPlus, Mail, Lock, Loader2 } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import AuthLayout from "@/components/AuthLayout";
-import GoogleIcon from "@/components/GoogleIcon";
 import { toast } from "@/components/ui/use-toast";
 
 export default function Register() {
@@ -49,7 +48,11 @@ export default function Register() {
       const pendingBuildingId = localStorage.getItem('bawab_building_id');
       try {
         if (pendingBuildingId) {
-          await supabase.functions.invoke('completeSelfSignup', { body: { building_id: pendingBuildingId } });
+          await fetch('/api/complete-signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: (await supabase.auth.getUser()).data.user?.id, building_id: pendingBuildingId }),
+          });
           localStorage.removeItem('bawab_building_id');
         }
       } catch (e) {
@@ -77,12 +80,7 @@ export default function Register() {
     }
   };
 
-  const handleGoogle = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: window.location.origin }
-    });
-  };
+  // Google login removed because OAuth is not configured in Supabase.
 
   if (showOtp) {
     return (
@@ -152,23 +150,7 @@ export default function Register() {
         </>
       }
     >
-      <Button
-        variant="outline"
-        className="w-full h-12 text-sm font-medium mb-6"
-        onClick={handleGoogle}
-      >
-        <GoogleIcon className="w-5 h-5 mr-2" />
-        Continue with Google
-      </Button>
 
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-border" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-3 text-muted-foreground">or</span>
-        </div>
-      </div>
 
       {error && (
         <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">

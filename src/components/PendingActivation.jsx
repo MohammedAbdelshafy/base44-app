@@ -4,6 +4,11 @@ import { Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function PendingActivation() {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/login';
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-white to-slate-50 p-4">
       <div className="max-w-md w-full p-8 bg-white rounded-2xl shadow-lg border border-slate-100 text-center">
@@ -16,7 +21,7 @@ export default function PendingActivation() {
         <p className="text-sm text-muted-foreground mb-6">
           Your account is pending activation — ask the admin to assign your role
         </p>
-        <Button onClick={() => base44.auth.logout('/login')} variant="outline" className="w-full">
+        <Button onClick={handleLogout} variant="outline" className="w-full">
           Logout
         </Button>
       </div>

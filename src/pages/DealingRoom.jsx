@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
+import { dataAccess } from '@/api/dataAccess';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
 import { statusDateUpdate, NEXT_STATUS } from '@/lib/dealUtils';
@@ -27,13 +28,18 @@ export default function DealingRoom() {
   const [settleDeal, setSettleDeal] = useState(null);
 
   async function load() {
-    const [d, sm] = await Promise.all([
-      base44.entities.Deal.list('-created_date'),
-      base44.entities.SalesMember.list(),
-    ]);
-    setDeals(d);
-    setSalesMembers(sm);
-    setLoading(false);
+    try {
+      const [d, sm] = await Promise.all([
+        dataAccess.deals.list('-created_date'),
+        dataAccess.salesMembers.list(),
+      ]);
+      setDeals(d);
+      setSalesMembers(sm);
+    } catch (err) {
+      console.error('DealingRoom load failed:', err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { load(); }, []);
@@ -74,12 +80,12 @@ export default function DealingRoom() {
   async function advanceStatus(deal) {
     const next = NEXT_STATUS[deal.status];
     if (!next) return;
-    await supabase.from('deals').update(statusDateUpdate(next).eq('id', deal.id));
+    await supabase.from('deals').update(statusDateUpdate(next)).eq('id', deal.id);
     load();
   }
 
   async function cancelDeal(deal) {
-    await supabase.from('deals').update(statusDateUpdate('cancelled').eq('id', deal.id));
+    await supabase.from('deals').update(statusDateUpdate('cancelled')).eq('id', deal.id);
     load();
   }
 

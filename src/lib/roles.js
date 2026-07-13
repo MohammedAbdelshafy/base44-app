@@ -1,13 +1,13 @@
 // Role-based access control
 const ROLE_ACCESS = {
-  admin: ['dashboard', 'kpis', 'buildings', 'pickups', 'payments', 'commissions', 'warehouse', 'users', 'vehicles', 'sales_members', 'dealing_room', 'drivers', 'new_requests', 'customers', 'reports'],
-  ops: ['dashboard', 'kpis', 'buildings', 'pickups', 'payments', 'commissions', 'warehouse', 'vehicles', 'sales_members', 'dealing_room', 'drivers', 'new_requests', 'customers', 'reports'],
-  sales_rep: ['buildings', 'commissions'],
-  banger: ['dealing_room', 'commissions'],
-  data_manager: ['buildings', 'pickups', 'new_requests', 'customers'],
-  driver: ['todays_route'],
-  warehouse_foreman: ['warehouse'],
-  customer: ['my_building'],
+  admin: ['my_work', 'dashboard', 'kpis', 'buildings', 'pickups', 'payments', 'commissions', 'warehouse', 'users', 'vehicles', 'sales_members', 'dealing_room', 'drivers', 'new_requests', 'customers', 'reports'],
+  ops: ['my_work', 'dashboard', 'kpis', 'buildings', 'pickups', 'payments', 'commissions', 'warehouse', 'vehicles', 'sales_members', 'dealing_room', 'drivers', 'new_requests', 'customers', 'reports'],
+  sales_rep: ['my_work', 'buildings', 'commissions'],
+  banger: ['my_work', 'dealing_room', 'commissions'],
+  data_manager: ['my_work', 'buildings', 'pickups', 'new_requests', 'customers'],
+  driver: ['my_work', 'todays_route'],
+  warehouse_foreman: ['my_work', 'warehouse'],
+  customer: ['my_work', 'my_building'],
 };
 
 const KNOWN_ROLES = Object.keys(ROLE_ACCESS);

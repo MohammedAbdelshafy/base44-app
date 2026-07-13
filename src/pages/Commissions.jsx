@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
+import { dataAccess } from '@/api/dataAccess';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
 import { formatDateTime } from '@/lib/dateUtils';
@@ -54,13 +55,18 @@ export default function Commissions() {
   const [selected, setSelected] = useState(new Set());
 
   async function load() {
-    const [c, sm] = await Promise.all([
-      base44.entities.Commission.list('-created_date'),
-      base44.entities.SalesMember.list(),
-    ]);
-    setCommissions(c);
-    setSalesMembers(sm);
-    setLoading(false);
+    try {
+      const [c, sm] = await Promise.all([
+        dataAccess.commissions.list('-created_date'),
+        dataAccess.salesMembers.list(),
+      ]);
+      setCommissions(c);
+      setSalesMembers(sm);
+    } catch (err) {
+      console.error('Commissions load failed:', err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { load(); }, []);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
+import { dataAccess } from '@/api/dataAccess';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
 import { todayCairo, formatDateTime } from '@/lib/dateUtils';
@@ -28,19 +29,25 @@ export default function Payments() {
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState({ building_id: '', amount: 100, payment_date: todayCairo(), note: '' });
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   async function load() {
-    const [p, b, s, sm] = await Promise.all([
-      base44.entities.Payment.list('-created_date'),
-      base44.entities.Building.list(),
-      base44.entities.Subscription.list(),
-      base44.entities.SalesMember.list(),
-    ]);
-    setPayments(p);
-    setBuildings(b);
-    setSubscriptions(s);
-    setSalesMembers(sm);
-    setLoading(false);
+    setError(null);
+    try {
+      const [p, b, s, sm] = await Promise.all([
+        dataAccess.payments.list('-created_date'),
+        dataAccess.buildings.list(),
+        dataAccess.subscriptions.list(),
+        dataAccess.salesMembers.list(),
+      ]);
+      setPayments(p);
+      setBuildings(b);
+      setSubscriptions(s);
+      setSalesMembers(sm);
+    } catch (err) {
+      console.error('Payments load failed:', err);
+      setError(t('failed_to_load_payments'));
+    }
   }
 
   useEffect(() => { load(); }, []);
@@ -49,7 +56,7 @@ export default function Payments() {
     setSaving(true);
     const building = buildings.find(b => b.id === form.building_id);
     const amount = Number(form.amount);
-    const payment = await supabase.from('payments').insert([{
+    const { data: paymentData } = await supabase.from('payments').insert([{
       building_id: form.building_id,
       building_name: building?.name || '',
       amount,
@@ -57,7 +64,8 @@ export default function Payments() {
       collected_by_id: user?.id,
       collected_by_name: user?.full_name || user?.email || '',
       note: form.note,
-    }]);
+    }]).select().single();
+    const paymentId = paymentData?.id;
 
     const sub = subscriptions.find(s => s.building_id === form.building_id);
 
@@ -73,7 +81,7 @@ export default function Payments() {
         const rep = salesMembers.find(sm => sm.rep_code === building.rep_code && sm.member_role === 'rep');
         if (rep) {
           const existingBounty = (await supabase.from('commissions').select('*').match({
-            payment_id: payment.id
+            payment_id: paymentId
           }).order('type', { ascending: true })).data;
           if (existingBounty.length === 0) {
             await supabase.from('commissions').insert([{
@@ -83,7 +91,7 @@ export default function Payments() {
               amount: 10,
               building_id: building.id,
               building_name: building.name,
-              payment_id: payment.id,
+              payment_id: paymentId,
               rep_code: building.rep_code,
               status: 'pending',
             }]);
@@ -95,7 +103,7 @@ export default function Payments() {
     // 4: Manager override — 5% on every payment, regardless of subscription status
     const manager = salesMembers.find(sm => sm.member_role === 'manager' && sm.is_active);
     if (manager) {
-      const existingOverride = (await supabase.from('commissions').select('*').eq('payment_id', payment.id).order('type', { ascending: true })).data;
+      const existingOverride = (await supabase.from('commissions').select('*').eq('payment_id', paymentId).order('type', { ascending: true })).data;
       if (existingOverride.length === 0) {
         await supabase.from('commissions').insert([{
           sales_member_id: manager.id,
@@ -104,7 +112,7 @@ export default function Payments() {
           amount: amount * 0.05,
           building_id: form.building_id,
           building_name: building?.name || '',
-          payment_id: payment.id,
+          payment_id: paymentId,
           status: 'pending',
         }]);
       }
@@ -130,7 +138,12 @@ export default function Payments() {
   }
 
   if (loading) {
-    return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-navy/20 border-t-navy rounded-full animate-spin" /></div>;
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <div className="w-8 h-8 border-4 border-navy/20 border-t-navy rounded-full animate-spin" />
+        <p className="text-sm text-muted-foreground">{t('loading')}</p>
+      </div>
+    );
   }
 
   const total = filtered.reduce((s, p) => s + (p.amount || 0), 0);

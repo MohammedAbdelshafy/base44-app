@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const translations = {
   ar: {
-    app_name: 'DAWRIX',
+    app_name: 'dawrix',
     app_subtitle: 'إدارة عمليات جمع المخلفات',
     dashboard: 'لوحة التحكم',
     buildings: 'المباني',
@@ -135,6 +135,7 @@ const translations = {
     vehicle_type: 'نوع المركبة',
     'tuk-tuk': 'توك توك',
     'motorcycle-cart': 'موتوسيكل بعربة',
+    'vehicle_pickup': 'بيك أب',
 
     total_buildings: 'إجمالي المباني',
     active_subscriptions: 'اشتراكات فعّالة',
@@ -181,6 +182,7 @@ const translations = {
     generate_now: 'توليد الآن',
     no_report_today: 'لا يوجد تقرير لليوم حتى الآن',
     generating: 'جاري التوليد...',
+    reload: 'تحديث',
     deal: 'صفقة',
     deals: 'صفقات',
     add_deal: 'صفقة جديدة',
@@ -372,9 +374,16 @@ const translations = {
     kpi_pipeline_value: 'قيمة المسودة',
     kpi_manager_overrides: 'عمولات المديرين',
     kpi_no_data: 'لا توجد بيانات كافية بعد',
+
+    my_work: 'كل أعمالي',
+    good_morning: 'صباح الخير',
+    good_afternoon: 'مساء الخير',
+    good_evening: 'مساء الخير',
+    quick_access: 'وصول سريع',
+    shortcuts: 'اختصارات',
   },
   en: {
-    app_name: 'DAWRIX',
+    app_name: 'dawrix',
     app_subtitle: 'Waste Collection Operations',
     dashboard: 'Dashboard',
     buildings: 'Buildings',
@@ -507,6 +516,7 @@ const translations = {
     vehicle_type: 'Vehicle Type',
     'tuk-tuk': 'Tuk-tuk',
     'motorcycle-cart': 'Motorcycle Cart',
+    'vehicle_pickup': 'Pickup',
 
     total_buildings: 'Total Buildings',
     active_subscriptions: 'Active Subscriptions',
@@ -553,6 +563,7 @@ const translations = {
     generate_now: 'Generate Now',
     no_report_today: 'No report for today yet',
     generating: 'Generating...',
+    reload: 'Reload',
     deal: 'Deal',
     deals: 'Deals',
     add_deal: 'New Deal',
@@ -744,6 +755,13 @@ const translations = {
     kpi_pipeline_value: 'Pipeline value',
     kpi_manager_overrides: 'Manager overrides',
     kpi_no_data: 'Not enough data yet',
+
+    my_work: 'My Work',
+    good_morning: 'Good morning',
+    good_afternoon: 'Good afternoon',
+    good_evening: 'Good evening',
+    quick_access: 'Quick Access',
+    shortcuts: 'Shortcuts',
   }
 };
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
+import { dataAccess } from '@/api/dataAccess';
 import { useAuth } from '@/lib/AuthContext';
 import { useLang } from '@/lib/i18n';
 import { formatDateTime } from '@/lib/dateUtils';
@@ -33,25 +34,30 @@ export default function UserManagement() {
   const [saving, setSaving] = useState(false);
 
   async function load() {
-    const [u, inv] = await Promise.all([
-      base44.entities.User.list('-created_date'),
-      base44.entities.Invitation.filter({ status: 'pending' }, '-invited_at'),
-    ]);
-    setUsers(u);
-    // Auto-accept invitations whose email now has a registered user.
-    const emailSet = new Set(u.map(x => (x.email || '').toLowerCase()));
-    const accepted = inv.filter(i => emailSet.has((i.email || '').toLowerCase()));
-    if (accepted.length) {
-      try {
-        await supabase.from('invitations').update({ status: 'accepted' }).in('id', 
-          accepted.map(i => ({ id: i.id }))
-        );
-      } catch (_e) { /* non-fatal */ }
-      setInvitations(inv.filter(i => !emailSet.has((i.email || '').toLowerCase())));
-    } else {
-      setInvitations(inv);
+    try {
+      const [u, inv] = await Promise.all([
+        dataAccess.users.list('-created_date'),
+        dataAccess.invitations.filter({ status: 'pending' }, '-invited_at'),
+      ]);
+      setUsers(u);
+      // Auto-accept invitations whose email now has a registered user.
+      const emailSet = new Set(u.map(x => (x.email || '').toLowerCase()));
+      const accepted = inv.filter(i => emailSet.has((i.email || '').toLowerCase()));
+      if (accepted.length) {
+        try {
+          await supabase.from('invitations').update({ status: 'accepted' }).in('id', 
+            accepted.map(i => i.id)
+          );
+        } catch (_e) { /* non-fatal */ }
+        setInvitations(inv.filter(i => !emailSet.has((i.email || '').toLowerCase())));
+      } else {
+        setInvitations(inv);
+      }
+    } catch (err) {
+      console.error('UserManagement load failed:', err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
   useEffect(() => { load(); }, []);
 
@@ -61,7 +67,6 @@ export default function UserManagement() {
       // The platform's inviteUser only accepts 'user'/'admin'; invite as 'user'
       // and store the intended staff role on an Invitation record, which the
       // login guard resolves at first login.
-      await supabase.functions.invoke('inviteUser', { body: { email: inviteForm.email, role: 'user' } });
       await supabase.from('invitations').insert([{
         email: inviteForm.email,
         intended_role: inviteForm.role,
@@ -70,6 +75,15 @@ export default function UserManagement() {
         invited_by_name: currentUser?.full_name || '',
         invited_at: new Date().toISOString(),
       }]);
+
+      supabase.functions.invoke('add-to-email-queue', {
+        body: {
+          recipient_email: inviteForm.email,
+          subject: `You've been invited as ${inviteForm.role}`,
+          body: `Hi,\n\nYou've been invited to join Dawrix as ${inviteForm.role}.\n\nPlease sign in at the app to get started.\n\n- Dawrix Team`,
+        },
+      }).catch(() => {});
+
       toast({ title: t('invite_sent') });
       setInviteOpen(false);
       setInviteForm({ email: '', role: 'driver' });
@@ -83,7 +97,13 @@ export default function UserManagement() {
 
   async function handleResend(inv) {
     try {
-      await supabase.functions.invoke('inviteUser', { body: { email: inv.email, role: 'user' } });
+      supabase.functions.invoke('add-to-email-queue', {
+        body: {
+          recipient_email: inv.email,
+          subject: `Reminder: You've been invited as ${inv.intended_role}`,
+          body: `Hi,\n\nThis is a reminder that you've been invited to join Dawrix as ${inv.intended_role}.\n\nPlease sign in at the app to get started.\n\n- Dawrix Team`,
+        },
+      }).catch(() => {});
       toast({ title: t('invite_sent') });
     } catch (e) {
       toast({ title: e.message || String(e), variant: 'destructive' });

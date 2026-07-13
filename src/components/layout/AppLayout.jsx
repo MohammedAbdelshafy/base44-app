@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { supabase } from '@/api/supabaseClient';
+import { dataAccess } from '@/api/dataAccess';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
-import { canAccess, getHomeRoute, isUnassignedRole } from '@/lib/roles';
+import { canAccess, isUnassignedRole } from '@/lib/roles';
 import {
   LayoutDashboard, BarChart3, Building2, Truck, CreditCard, Award,
-  Warehouse, Users, UsersRound, Car, UserCog, Menu, X, LogOut, Handshake, UserCheck, Inbox, FileText
+  Warehouse, Users, UsersRound, Car, UserCog, Menu, X, LogOut, Handshake, UserCheck, Inbox, FileText, Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
 import PendingActivation from '@/components/PendingActivation';
 
 const navItems = [
-  { key: 'dashboard', icon: LayoutDashboard, path: '/', module: 'dashboard' },
+  { key: 'my_work', icon: LayoutDashboard, path: '/my-work', module: 'my_work' },
+  { key: 'dashboard', icon: BarChart3, path: '/', module: 'dashboard' },
   { key: 'kpis', icon: BarChart3, path: '/kpis', module: 'kpis' },
   { key: 'buildings', icon: Building2, path: '/buildings', module: 'buildings' },
   { key: 'pickups', icon: Truck, path: '/pickups', module: 'pickups' },
@@ -30,11 +30,12 @@ const navItems = [
   { key: 'users', icon: Users, path: '/users', module: 'users', label: 'team' },
   { key: 'reports', icon: FileText, path: '/reports', module: 'reports' },
   { key: 'customers', icon: UsersRound, path: '/customers', module: 'customers' },
+  { key: 'mbm', icon: Zap, path: '/mbm', module: 'dashboard', label: 'MBM Dashboard' },
 ];
 
 export default function AppLayout() {
   const { t, lang, setLang, isRTL } = useLang();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [requestCount, setRequestCount] = useState(0);
@@ -42,7 +43,7 @@ export default function AppLayout() {
 
   useEffect(() => {
     if (!role || !canAccess(role, 'new_requests')) return;
-    base44.entities.Building.list().then(all => {
+    dataAccess.buildings.list().then(all => {
       setRequestCount(all.filter(b => b.status === 'pickup_requested').length);
     }).catch(() => {});
   }, [role]);
@@ -66,6 +67,7 @@ export default function AppLayout() {
           user={user}
           role={role}
           requestCount={requestCount}
+          logout={logout}
         />
       </aside>
 
@@ -90,6 +92,7 @@ export default function AppLayout() {
               role={role}
               requestCount={requestCount}
               onNavClick={() => setMobileOpen(false)}
+              logout={logout}
             />
           </aside>
         </div>
@@ -136,11 +139,11 @@ export default function AppLayout() {
   );
 }
 
-function SidebarContent({ visibleNav, location, t, lang, setLang, user, role, requestCount, onNavClick }) {
+function SidebarContent({ visibleNav, location, t, lang, setLang, user, role, requestCount, onNavClick, logout }) {
   return (
     <>
       <div className="p-5 border-b border-white/10">
-        <h1 className="text-2xl font-bold tracking-wide">DAWRIX</h1>
+        <h1 className="text-2xl font-bold tracking-wide">dawrix</h1>
         <p className="text-xs text-white/60 mt-0.5">{t('app_subtitle')}</p>
       </div>
 
@@ -173,7 +176,7 @@ function SidebarContent({ visibleNav, location, t, lang, setLang, user, role, re
       <div className="p-4 border-t border-white/10 space-y-2">
         <button
           onClick={() => {
-            base44.auth.logout('/login');
+            logout();
           }}
           className="flex items-center gap-2 text-sm text-white/70 hover:text-white w-full px-2 py-1.5 rounded transition-colors"
         >

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/api/supabaseClient';
+import { dataAccess } from '@/api/dataAccess';
 import { useLang } from '@/lib/i18n';
 import { formatDateTime } from '@/lib/dateUtils';
 import PageHeader from '@/components/shared/PageHeader';
@@ -22,15 +22,20 @@ export default function Customers() {
   const [editUser, setEditUser] = useState(null);
 
   async function load() {
-    const [u, b, s] = await Promise.all([
-      base44.entities.User.list('-created_date'),
-      base44.entities.Building.list(),
-      base44.entities.Subscription.list(),
-    ]);
-    setUsers(u.filter(x => x.role === 'customer'));
-    setBuildings(b);
-    setSubscriptions(s);
-    setLoading(false);
+    try {
+      const [u, b, s] = await Promise.all([
+        dataAccess.users.list('-created_date'),
+        dataAccess.buildings.list(),
+        dataAccess.subscriptions.list(),
+      ]);
+      setUsers(u.filter(x => x.role === 'customer'));
+      setBuildings(b);
+      setSubscriptions(s);
+    } catch (err) {
+      console.error('Customers load failed:', err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { load(); }, []);

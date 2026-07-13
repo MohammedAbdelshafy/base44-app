@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Search, BookOpen, Code, MessageSquare, GitCommit,
-  Rocket, Filter, Clock, Hash
+  Search, BookOpen, Code, MessageSquare,
+  Rocket, Hash
 } from 'lucide-react';
 
 import { useChronicleSearch } from '../hooks/useMissionControl';

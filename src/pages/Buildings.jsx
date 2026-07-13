@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/api/supabaseClient';
+import { dataAccess } from '@/api/dataAccess';
 import { useLang } from '@/lib/i18n';
 import { useAuth } from '@/lib/AuthContext';
 import { formatDateTime } from '@/lib/dateUtils';
@@ -30,17 +30,23 @@ export default function Buildings() {
   const [formOpen, setFormOpen] = useState(false);
   const [editBuilding, setEditBuilding] = useState(null);
   const [viewBuilding, setViewBuilding] = useState(null);
+  const [error, setError] = useState(null);
 
   async function load() {
-    const [b, s, sm] = await Promise.all([
-      base44.entities.Building.list('-created_date'),
-      base44.entities.Subscription.list(),
-      base44.entities.SalesMember.list(),
-    ]);
-    setBuildings(b);
-    setSubscriptions(s);
-    setSalesMembers(sm);
-    setLoading(false);
+    setError(null);
+    try {
+      const [b, s, sm] = await Promise.all([
+        dataAccess.buildings.list('-created_date'),
+        dataAccess.subscriptions.list(),
+        dataAccess.salesMembers.list(),
+      ]);
+      setBuildings(b);
+      setSubscriptions(s);
+      setSalesMembers(sm);
+    } catch (err) {
+      console.error('Buildings load failed:', err);
+      setError(t('failed_to_load_buildings'));
+    }
   }
 
   useEffect(() => { load(); }, []);
