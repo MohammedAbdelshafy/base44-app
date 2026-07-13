@@ -20,6 +20,8 @@
 !/IDENTITY.md
 !/.claude/
 !/.claude/**
+/.claude/**/*.local*
+/.claude/state/
 !/.agents/
 !.agents/**
 !/SOUL.md
