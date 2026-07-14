@@ -35,6 +35,10 @@
 !/supabase/migrations/**
 !/.github/
 !/.github/**
+!/clipping-factory/
+!/clipping-factory/**
+!/MBM/
+!/MBM/**
 
 # env
 .env
