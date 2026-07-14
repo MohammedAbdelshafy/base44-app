@@ -1,0 +1,27 @@
+{
+  "date": "2026-07-07",
+  "generated_at": "2026-07-07T01:58:10.809476",
+  "total_leads": 447,
+  "wholesalers": 72,
+  "distressed_sellers": 375,
+  "sources": [
+    "Dallas 311 API",
+    "Web",
+    "HouseCashin",
+    "KeyCrew",
+    "REI Club",
+    "OpenStreetMap",
+    "BiggerPockets",
+    "RealEstateBees"
+  ],
+  "cities": [
+    "Dallas, TX",
+    "Fort Worth, TX",
+    "Dallas"
+  ],
+  "files": {
+    "full_pack": "C:\\Users\\omare\\OneDrive\\Desktop\\AI\\MBM\\LeadPacks\\Pack_2026-07-07\\FULL_PACK_2026-07-07.csv",
+    "wholesalers": "C:\\Users\\omare\\OneDrive\\Desktop\\AI\\MBM\\LeadPacks\\Pack_2026-07-07\\WHOLESALERS_2026-07-07.csv",
+    "distressed_sellers": "C:\\Users\\omare\\OneDrive\\Desktop\\AI\\MBM\\LeadPacks\\Pack_2026-07-07\\DISTRESSED_SELLERS_2026-07-07.csv"
+  }
+}
