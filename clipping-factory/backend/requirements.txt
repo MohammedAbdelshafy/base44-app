@@ -1,0 +1,71 @@
+# ============================================================
+# CLIPPING FACTORY — BACKEND DEPENDENCIES
+# Pin major versions; update deliberately.
+# ============================================================
+
+# Web framework
+fastapi>=0.115.12
+uvicorn[standard]==0.30.6
+pydantic>=2.9.2
+pydantic-settings>=2.6.1
+
+# Database
+sqlalchemy==2.0.35
+asyncpg==0.29.0
+aiosqlite==0.20.0
+alembic==1.13.3
+psycopg2-binary>=2.9.9
+
+# Task queue
+celery[redis]==5.4.0
+kombu==5.3.4
+redis==5.1.1
+
+# Storage
+boto3==1.35.0
+
+# AI providers
+anthropic>=0.40.0
+openai==1.47.0
+
+# MCP server (fastmcp — fast, Pythonic MCP server builder)
+fastmcp>=0.9.0
+
+# AI-driven browser automation (browser-use — survives DOM changes on Clipping.com)
+browser-use>=0.1.0
+langchain-anthropic>=0.3.0
+
+# Video / audio processing
+yt-dlp==2024.9.27
+faster-whisper==1.0.3
+moviepy==1.0.3
+opencv-python-headless==4.10.0.84
+
+# Browser automation
+playwright==1.47.0
+
+# HTTP client
+httpx<0.28
+requests==2.32.3
+
+# Monitoring
+prometheus-fastapi-instrumentator==7.0.0
+psutil==6.0.0
+
+# PDF extraction (for campaign docs/brief files)
+pdfplumber==0.11.4
+PyPDF2==3.0.1
+
+# Utilities
+python-multipart==0.0.12
+python-dotenv>=1.1.0
+cryptography==43.0.1
+passlib[bcrypt]==1.7.4
+
+# Dev / testing
+pytest==8.3.3
+pytest-asyncio==0.24.0
+pytest-cov==5.0.0
+factory-boy==3.3.1
+runware-sdk
+

@@ -1,0 +1,15 @@
+2:"$Sreact.fragment"
+3:I[52168,["973","static/chunks/973-165360e174cc0fa3.js","84","static/chunks/84-981ee548da1e4ec1.js","185","static/chunks/app/layout-822b986c9a18eb61.js"],"Providers",1]
+4:I[39275,[],""]
+5:I[61343,[],""]
+6:I[27776,["973","static/chunks/973-165360e174cc0fa3.js","84","static/chunks/84-981ee548da1e4ec1.js","185","static/chunks/app/layout-822b986c9a18eb61.js"],"Toaster",1]
+8:I[53120,[],"OutletBoundary"]
+a:I[53120,[],"MetadataBoundary"]
+c:I[53120,[],"ViewportBoundary"]
+e:I[76130,[],""]
+1:HL["/_next/static/css/1f419f15efe144ed.css","style"]
+0:{"P":null,"b":"Wo0myD_-1EIVlvsCqNgU-","p":"","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$2","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/1f419f15efe144ed.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","className":"dark","children":["$","body",null,{"className":"__className_f367f3","children":[["$","$L3",null,{"children":["$","$L4",null,{"parallelRouterKey":"children","segmentPath":["children"],"error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":"404"}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],"notFoundStyles":[]}]}],["$","$L6",null,{"theme":"dark","position":"bottom-right","richColors":true}]]}]}]]}],{"children":["__PAGE__",["$","$2","c",{"children":["$L7",null,["$","$L8",null,{"children":"$L9"}]]}],{},null]},null],["$","$2","h",{"children":[null,["$","$2","MUMiNPg-hKHaOHsn4M2zP",{"children":[["$","$La",null,{"children":"$Lb"}],["$","$Lc",null,{"children":"$Ld"}],null]}]]}]]],"m":"$undefined","G":"$e","s":false,"S":true}
+7:E{"digest":"NEXT_REDIRECT;replace;/campaigns;307;"}
+d:[["$","meta","0",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+b:[["$","meta","0",{"charSet":"utf-8"}],["$","title","1",{"children":"Clipping Factory"}],["$","meta","2",{"name":"description","content":"Autonomous Clipping.com Campaign Operating System"}]]
+9:null
