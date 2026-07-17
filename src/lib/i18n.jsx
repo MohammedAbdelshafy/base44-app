@@ -467,7 +467,7 @@ const translations = {
     trial_start: 'Trial Start',
     trial_end: 'Trial End',
     converted_at: 'Converted At',
-    first_month_free: 'First month free',
+    first_month_free: 'First week free',
     monthly_price: 'Monthly Price',
     pickup: 'Pickup',
     pending: 'Pending',

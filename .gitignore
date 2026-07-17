@@ -70,3 +70,14 @@ dist-ssr
 *.sw?
 
 .vite
+
+# Build artifacts & temp files
+*.tsbuildinfo
+*.bak.*
+*.bak
+celerybeat-schedule.*
+build_err.txt
+build_log.txt
+gateway_launch*.log
+*.pyc
+__pycache__/

@@ -4,7 +4,7 @@ const storage = windowObj.localStorage;
 
 const getAppParamValue = (paramName, { defaultValue = undefined, removeFromUrl = false } = {}) => {
   if (isNode) return defaultValue;
-  const storageKey = `dawrix_${paramName}`;
+  const storageKey = `contech_${paramName}`;
   const urlParams = new URLSearchParams(window.location.search);
   const searchParam = urlParams.get(paramName);
   if (removeFromUrl) {

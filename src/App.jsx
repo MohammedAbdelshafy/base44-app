@@ -44,6 +44,8 @@ const MissionControlDashboard = lazy(() => import('@/pages/MissionControlDashboa
 const MissionDetail = lazy(() => import('@/pages/MissionDetail'));
 const ChronicleSearch = lazy(() => import('@/pages/ChronicleSearch'));
 const MBMDashboard = lazy(() => import('@/pages/MBMDashboard'));
+const DemoLandingPage = lazy(() => import('@/pages/DemoLandingPage'));
+const ClientHuntDashboard = lazy(() => import('@/pages/ClientHuntDashboard'));
 
 function PageLoader() {
   return (
@@ -88,6 +90,10 @@ const AuthenticatedApp = () => {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/bawab-signup" element={<Navigate to="/doorman-signup" replace />} />
         <Route path="/doorman-signup" element={<DoormanSignup />} />
+        {/* Public demo landing page */}
+        <Route path="/demo" element={<DemoLandingPage />} />
+        {/* Client Hunt Dashboard */}
+        <Route path="/hunt" element={<ClientHuntDashboard />} />
         <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
           <Route element={<AppLayout />}>
             <Route path="/my-work" element={<RoleRoute module="my_work"><MyWorkDashboard /></RoleRoute>} />

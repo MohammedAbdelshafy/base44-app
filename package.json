@@ -1,5 +1,5 @@
 {
-  "name": "dawrix-local",
+  "name": "contech-ai-agentic-teamz",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,6 +9,24 @@
     "start": "node start.cjs",
     "build": "vite build",
     "send-emails": "node server/emailSender.js",
+    "demo:generate": "node server/demoCampaign.js --generate",
+    "demo:campaign": "node server/demoCampaign.js --campaign",
+    "demo:once": "node server/demoCampaign.js --once",
+    "demo:daemon": "node server/demoCampaign.js --daemon",
+    "hunt": "node server/clientHunter.js",
+    "hunt:send": "node server/clientHunter.js --send",
+    "hunt:report": "node server/clientHunter.js --report",
+    "demo:quality": "python scripts/quality_enhance_and_send.py",
+    "demo:build": "node server/demoBuilder.js --batch",
+    "demo:page": "node server/demoBuilder.js",
+    "clip:build": "cd clipping-factory/backend && .venv\\Scripts\\python.exe build_one_clip.py",
+    "clip:seed": "cd clipping-factory/backend && .venv\\Scripts\\python.exe seed_campaigns.py",
+    "clip:server": "cd clipping-factory/backend && .venv\\Scripts\\python.exe -m uvicorn app.main:app --reload --port 8000",
+    "clip:monitor": "cd clipping-factory/backend && .venv\\Scripts\\python.exe -c \"from app.agents.monetization_agent import MonetizationAgent; from app.core.database import SyncSessionLocal; db=SyncSessionLocal(); print(MonetizationAgent(db=db)._safe_run().data); db.close()\"",
+    "clip:quality": "cd clipping-factory/backend && .venv\\Scripts\\python.exe -c \"from app.services.video_processor import VideoProcessor; print('Quality tools: edge-tts OK, whisperx OK')\"",
+    "clip:analytics": "cd clipping-factory/backend && .venv\\Scripts\\python.exe -c \"from app.workers.analytics_tasks import sync_post_metrics; r=sync_post_metrics(); print(r)\"",
+    "clip:report": "cd clipping-factory/backend && .venv\\Scripts\\python.exe -c \"from app.services.analytics import AnalyticsService; from app.core.database import SyncSessionLocal; db=SyncSessionLocal(); a=AnalyticsService(db=db); print('Platform Comparison:', a.platform_comparison()); print('Top Clips:', a.top_performing_clips(5)); db.close()\"",
+    "clip:multi-deliver": "cd clipping-factory/backend && .venv\\Scripts\\python.exe -c \"from app.agents.multi_platform_delivery import MultiPlatformDeliveryAgent; from app.core.database import SyncSessionLocal; import sys; clip_id=sys.argv[1] if len(sys.argv)>1 else None; db=SyncSessionLocal(); a=MultiPlatformDeliveryAgent(db=db); r=a.run(clip_id=clip_id) if clip_id else AgentResult.fail('Provide clip_id'); print(r); db.close()\"",
     "lint": "eslint src/ --quiet",
     "lint:fix": "eslint src/ --fix",
     "typecheck": "tsc -p ./jsconfig.json",
@@ -69,6 +87,7 @@
     "next-themes": "^0.4.4",
     "node-cron": "^4.6.0",
     "nodemailer": "^9.0.3",
+    "pg": "^8.22.0",
     "postgres": "^3.4.9",
     "qrcode": "^1.5.4",
     "react": "^18.2.0",
@@ -108,5 +127,9 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.2",
     "vite": "^6.1.0"
+  },
+  "allowScripts": {
+    "core-js@3.48.0": true,
+    "esbuild@0.25.12": true
   }
 }
